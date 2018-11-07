@@ -26,6 +26,8 @@ public class Innov8_Tinkerbell_redSafeZone extends LinearOpMode {
     double multL = 0.0081;
     double correctL = 1;  // 1 or -1
     double correctR = 1;  //1 or -1
+    double right = 0;
+    double degree = 0;
 
     public void runOpMode() throws InterruptedException {
 
@@ -41,6 +43,8 @@ public class Innov8_Tinkerbell_redSafeZone extends LinearOpMode {
         telemetry.addData("EndL", endPositionL);
         telemetry.addData("RightPower", robot.rightMotor.getPower());
         telemetry.addData("LeftPower", robot.leftMotor.getPower());
+        telemetry.addData("right", right);
+        telemetry.addData("degree", degree);
         telemetry.update();
 
 
@@ -61,6 +65,8 @@ public class Innov8_Tinkerbell_redSafeZone extends LinearOpMode {
             telemetry.addData("endL", endPositionL);
             telemetry.addData("RightPower", 10 * multR * correctR);
             telemetry.addData("LeftPower", 10 * multL * correctL);
+            telemetry.addData("right", right);
+            telemetry.addData("degree", degree);
             telemetry.update();
 
             robot.rightMotor.setPower(10 * multR * correctR);
@@ -102,6 +108,18 @@ public class Innov8_Tinkerbell_redSafeZone extends LinearOpMode {
             }
             robot.rightMotor.setPower(0);
             robot.leftMotor.setPower(0);
+
+            while (opModeIsActive() && degree < -3 && degree > 3) {
+                if (degree < -3) {
+                    robot.rightMotor.setPower(0.02);
+                    robot.leftMotor.setPower(-0.02);
+                } else {
+                    robot.rightMotor.setPower(-0.02);
+                    robot.leftMotor.setPower(0.02);
+                }
+                telemetry.addData("degree", degree);
+                telemetry.update();
+            }
         }
     }
 }
