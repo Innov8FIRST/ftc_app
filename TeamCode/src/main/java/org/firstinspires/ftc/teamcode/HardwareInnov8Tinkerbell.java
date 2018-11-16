@@ -23,17 +23,14 @@ public class HardwareInnov8Tinkerbell {
     /* Public OpMode members. */
     public DcMotor leftMotor = null;
     public DcMotor rightMotor = null;
-    public DcMotor leftChain = null;
+    public DcMotor liftMotor = null;    // used to raise and ower the lift
+    public DcMotor michael = null;
+
     //public DcMotor rightChain = null;
 
-    // public Servo    handL        = null;
-    // public Servo    handR        = null;
-    // public Servo    jewelArm     = null;
-    // public Servo    leftJewelArm = null;
-    // public Servo    bigfoot      = null;
     public Servo hook = null;
+    public Servo croc = null;
 
-    //  public Servo    claw         = null;
 
     //public ColorSensor leftFruity = null;
     //public ColorSensor rightFruity = null;
@@ -65,15 +62,17 @@ public class HardwareInnov8Tinkerbell {
         rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         //leftFruity = hwMap.colorSensor.get("leftFruity");
         //rightFruity = hwMap.colorSensor.get("rightFruity");
-        leftChain = hwMap.dcMotor.get("leftChain");
-        leftChain.setDirection(DcMotor.Direction.FORWARD);
+        liftMotor = hwMap.dcMotor.get("liftMotor");
+        liftMotor.setDirection(DcMotor.Direction.FORWARD);
         // rightChain = hwMap.dcMotor.get("rightChain");
         //rightChain.setDirection(DcMotor.Direction.FORWARD);
+        michael = hwMap.dcMotor.get("michael");
+        michael.setDirection(DcMotor.Direction.FORWARD);
 
         // Set all motors to zero power
         leftMotor.setPower(0);
         rightMotor.setPower(0);
-        leftChain.setPower(0);
+        liftMotor.setPower(0);
         //rightChain.setPower(0);
 
         // Set all motors to run without encoders.
@@ -81,22 +80,15 @@ public class HardwareInnov8Tinkerbell {
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftChain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
       //  rightChain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        michael.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Define and initialize ALL installed servos.
-        //  jewelArm = hwMap.servo.get("jewelArm");
-        //  jewelArm.setPosition(START_SERVO);
-        //  leftJewelArm = hwMap.servo.get("leftJewelArm");
-        //  leftJewelArm.setPosition(START_SERVO);
-        //  bigfoot = hwMap.servo.get("bigfoot");
-        //  bigfoot = hwMap.servo.get("bigfoot");
-        //  handL = hwMap.servo.get("handL");
-        //  handL.setPosition(0);
-        //  handR = hwMap.servo.get("handR");
-        //  handR.setPosition(0.4);
         hook = hwMap.servo.get("hook");
         hook.setPosition(START_SERVO);
+        croc = hwMap.servo.get("croc");
+        croc.setPosition(START_SERVO);
     }
 
     /***

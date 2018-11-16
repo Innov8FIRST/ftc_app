@@ -90,6 +90,9 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         double leftDirection = -1;
         double correctR = 0.9;
         double correctL = 1;
+
+        /* Commenting out the Vuforia code in Teleop
+
         VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
         params.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         params.vuforiaLicenseKey = "AQ1M9Hr/////AAAAGWU4/VA9CkB2qgx3FSD3/fw7bv2rFbgag0jODlm8OJlj9coE/2ldwiRYwteK6A0INCjLtDrsBB5m+hphfYZjNLTb6BU7+9qGCnprf45lWm/bnlvIyB7dptTblbZ2K1Se8LSTKNhIXpA5r9cThAjUkg8PbiUfG7Qj5fD5lq3w+q+RHnIyNv2l6RjqlhHw5IF2aGQxEFmsPPa8YDjTDSGF0CFEWokxNTSe55H3etnQVysmx7mTUws0VZu7rnSgeN26RRZg91PB5xmEHi/zS7KVjLKDgktZenAht5kLHpvs2bWrHDcu6Yk+dP4I2YfPgd6gTYhxeY9Ge5rUXkufQ3y3XIffUSbhjWMRdTVNolB7/WAZ";
@@ -100,6 +103,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
         VuforiaTrackables minerals = vuforia.loadTrackablesFromAsset("Minerals_OT");
         minerals.get(0).setName("block");
+        /*
 
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
@@ -114,12 +118,15 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        minerals.activate();
-        telemetry.addData("hello", "you fool");
+        //minerals.activate();
+        // telemetry.addData("hello", "you fool");
 
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+
+            /* Commnting out Vuforia code for Teleop
+
 
             for (VuforiaTrackable mineral : minerals) {  //For each loop for vuforia minerals
                 OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) mineral.getListener()).getPose();
@@ -137,7 +144,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
                 }
             }
-
+             */
 
             if (leftDirection == 1) {
                 left = gamepad1.left_stick_y;
@@ -172,10 +179,10 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             }
 
             if (gamepad2.left_stick_y < 0) {
-                robot.leftChain.setPower(20);
+                robot.liftMotor.setPower(20);
             }
             else {
-                robot.leftChain.setPower(0);
+                robot.liftMotor.setPower(0);
             }
             // For driving
             robot.leftMotor.setPower(left*leftDirection*correctL*reduceDriveSpeed);
@@ -236,52 +243,14 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             }
 
             // For driving
-            robot.leftChain.setPower(left2 * leftDirection * correctL * reduceDriveSpeed);
+            robot.liftMotor.setPower(left2 * leftDirection * correctL * reduceDriveSpeed);
             //robot.rightChain.setPower(right2 * rightDirection * correctR * reduceDriveSpeed);
 
-            /*
-
-            if (gamepad1.dpad_right) { // down
-                robot.leftJewelArm.setPosition(0.38);
-                robot.jewelArm.setPosition(0.1);
-            }
-
-            if (gamepad1.dpad_left) { //up
-                robot.leftJewelArm.setPosition(END_SERVO);
-                robot.jewelArm.setPosition(END_SERVO);
-            }
-
-            */
 
             if (gamepad1.y) {
                 rightDirection = rightDirection * -1;
                 leftDirection = leftDirection * -1;
             }
-
-
-            /*
-            while(gamepad1.y) { // opens hand
-
-//                if(robot.handL.getPosition()<0.4){
-//                  STOP
-//                }
-//               if(robot.handR.getPosition()>0.8) {
-//                    STOP
-//                }
-                robot.handL.setPosition(robot.handL.getPosition()+0.005);
-                robot.handR.setPosition(robot.handR.getPosition()-0.005);
-            }
-
-            while(gamepad1.a) { // closes hand
-                robot.handL.setPosition(robot.handL.getPosition()-0.005);
-                robot.handR.setPosition(robot.handR.getPosition()+0.005);
-            }
-            */
-
-            // Use gamepad buttons to get color sensor reading
-            //if (gamepad1.b) {
-            //    robot.leftFruity.enableLed(true);
-            //}
 
             lift  = gamepad2.left_stick_y;
             turn = -gamepad2.right_stick_y;
@@ -324,31 +293,29 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             }
 
 
+
             if (gamepad2.dpad_right)
             {
                 robot.bigfoot.setPosition(.7);
             }
             */
+            if (gamepad2.dpad_up)
+            {
+                robot.liftMotor.setPower(.1);
+            }
+
 
             // Send telemetry message to signify robot running;
             telemetry.addData("lift", "%.2f", left);
             telemetry.addData("turn", "%.2f", right);
-            /*
-            telemetry.addData("LeftFruityBlue", robot.leftFruity.blue());
-            telemetry.addData("LeftFruityRed", robot.leftFruity.red());
-            telemetry.addData("LeftFruityGreen", robot.leftFruity.green());
-            telemetry.addData("RightFruityBlue", robot.rightFruity.blue());
-            telemetry.addData("RightFruityRed", robot.rightFruity.red());
-            telemetry.addData("RightFruityGreen", robot.rightFruity.green());
-            */
-            // telemetry.addData("startGlypht ", startPositionGlypht);
-            // telemetry.addData("CurrentGlypht", robot.glypht.getCurrentPosition());
             telemetry.addData("LDir: ", leftDirection);
             telemetry.addData("RDir: ", rightDirection);
-            telemetry.addData("rightM", robot.rightMotor.getPower());
-            telemetry.addData("leftM", robot.leftMotor.getPower());
-            telemetry.addData("right2", right2);
-            telemetry.addData("left2", left2);
+            telemetry.addData("rightM: ", robot.rightMotor.getPower());
+            telemetry.addData("leftM: ", robot.leftMotor.getPower());
+            telemetry.addData("Lift: ", robot.liftMotor.getCurrentPosition());
+            telemetry.addData("LiftSpeed: ", robot.liftMotor.getPower());
+            telemetry.addData("right2: ", right2);
+            telemetry.addData("left2: ", left2);
 
             telemetry.update();
 
