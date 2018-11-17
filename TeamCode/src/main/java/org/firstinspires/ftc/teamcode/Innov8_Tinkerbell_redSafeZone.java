@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 public class Innov8_Tinkerbell_redSafeZone extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwareInnov8Duck robot = new HardwareInnov8Duck();   // Use Tinkerbell's hardware
+    HardwareInnov8Tinkerbell robot = new HardwareInnov8Tinkerbell();   // Use Tinkerbell's hardware
 
     /*Declare variables */
     double startPositionR = 0;
@@ -22,104 +22,109 @@ public class Innov8_Tinkerbell_redSafeZone extends LinearOpMode {
     int FDrive = 2;
     int teamColor = 0;   //0 = red   or 1 = blue
     int taskNumber = 0;   //used to determine the step that should be executed
-    double multR = 0.015;
-    double multL = 0.0081;
-    double correctL = 1;  // 1 or -1
-    double correctR = 1;  //1 or -1
+    double multR = 0.0009;
+    double multL = 0.0009;
+    double correctL = -1;  // 1 or -1
+    double correctR = -1;  //1 or -1
     double right = 0;
     double degree = 0;
+    double crocPos = 0;
+
+    public void forward(double feet, int power) {
+        startPositionL = robot.leftMotor.getCurrentPosition();
+        double encoder = feet * 161.29;
+        endPositionL = startPositionL + encoder;
+
+        while (opModeIsActive() && robot.leftMotor.getCurrentPosition() <= endPositionL) {
+            telemetried();
+            robot.rightMotor.setPower(power * multR * correctR);
+            robot.leftMotor.setPower(power * multL * correctL);
+            telemetry.addData("taskNumber", taskNumber);
+            telemetry.update();
+        }
+        robot.rightMotor.setPower(0);
+        robot.leftMotor.setPower(0);
+    }
+
+    public void centeredOnLine() {
+        robot.rightMotor.setPower(10 * multR * correctR);
+        robot.leftMotor.setPower(10 * multL * correctL);
+
+        while (opModeIsActive() && robot.leftMotor.getPower() != 0 || robot.rightMotor.getPower() != 0) {
+            telemetried();
+
+            telemetry.update();
+
+            if (robot.rightFruity.red() >= 150) {
+
+                robot.rightMotor.setPower(0);
+            }
+
+            if (robot.leftFruity.red() >= 300) {
+
+                robot.leftMotor.setPower(0);
+            }
+        }
+    }
+
+    public void crocDrop() {
+        crocPos = robot.croc.getPosition();
+        robot.croc.setPosition(1);
+            telemetry.addData("croc", crocPos);
+            telemetry.update();
+    }
+
+    public void telemetried() {
+        telemetry.addData("Case", taskNumber);
+        telemetry.addData("RightRed", robot.rightFruity.red());
+        telemetry.addData("RightBlue", robot.rightFruity.blue());
+        telemetry.addData("LeftRed", robot.leftFruity.red());
+        telemetry.addData("LeftBlue", robot.leftFruity.blue());
+        telemetry.addData("right", robot.rightMotor.getCurrentPosition());
+        telemetry.addData("left", robot.leftMotor.getCurrentPosition());
+        telemetry.addData("startR", startPositionR);
+        telemetry.addData("endR", endPositionR);
+        telemetry.addData("startL", startPositionL);
+        telemetry.addData("endL", endPositionL);
+        telemetry.addData("RightPower", 10 * multR * correctR);
+        telemetry.addData("LeftPower", 10 * multL * correctL);
+        telemetry.addData("right", right);
+        telemetry.addData("degree", degree);
+        telemetry.update();
+    }
 
     public void runOpMode() throws InterruptedException {
 
         robot.init(hardwareMap);                                // Servo mid position
-
-        startPositionR = robot.rightMotor.getCurrentPosition();
-        startPositionL = robot.leftMotor.getCurrentPosition();
-        telemetry.addData("startR", startPositionR);
-        telemetry.addData("startL", startPositionL);
-        telemetry.addData("CurrentR", robot.rightMotor.getCurrentPosition());
-        telemetry.addData("CurrentL", robot.leftMotor.getCurrentPosition());
-        telemetry.addData("EndR", endPositionR);
-        telemetry.addData("EndL", endPositionL);
-        telemetry.addData("RightPower", robot.rightMotor.getPower());
-        telemetry.addData("LeftPower", robot.leftMotor.getPower());
-        telemetry.addData("right", right);
-        telemetry.addData("degree", degree);
-        telemetry.update();
-
+        telemetried();
 
         waitForStart();
 
+        telemetried();
 
-        while (opModeIsActive() && taskNumber != 9999) {
-            telemetry.addData("Case", taskNumber);
-            telemetry.addData("RightRed", robot.rightFruity.red());
-            telemetry.addData("RightBlue", robot.rightFruity.blue());
-            telemetry.addData("right", robot.rightMotor.getCurrentPosition());
-            telemetry.addData("left", robot.leftMotor.getCurrentPosition());
-            telemetry.addData("startR", startPositionR);
-            telemetry.addData("endR", endPositionR);
-            telemetry.addData("LeftRed", robot.leftFruity.red());
-            telemetry.addData("LeftBlue", robot.leftFruity.blue());
-            telemetry.addData("startL", startPositionL);
-            telemetry.addData("endL", endPositionL);
-            telemetry.addData("RightPower", 10 * multR * correctR);
-            telemetry.addData("LeftPower", 10 * multL * correctL);
-            telemetry.addData("right", right);
-            telemetry.addData("degree", degree);
-            telemetry.update();
+        centeredOnLine();
+        taskNumber = 2;
+        telemetried();
 
-            robot.rightMotor.setPower(10 * multR * correctR);
-            robot.leftMotor.setPower(10 * multL * correctL);
+        //Moves robot forward in front of minerals
+        forward(1.5, 10);
+        taskNumber = 3;
+        telemetried();
 
-            while (robot.leftMotor.getPower() != 0 || robot.rightMotor.getPower() != 0) {
+        //After mineral has been knocked, moves forward to in front of safe zone
+        forward(0.8, 10);
+        taskNumber = 4;
+        telemetried();
 
-                telemetry.update();
+        //Gets robot to inside the safe zone to drop totem
+        forward(0.6, 10);
+        taskNumber = 5;
+        telemetried();
 
-                if (robot.rightFruity.red() >= 450) {
+        crocDrop();
+        taskNumber = 9999;
+        telemetried();
 
-                    robot.rightMotor.setPower(0);
-                }
-
-                if (robot.leftFruity.red() >= 300) {
-
-                    robot.leftMotor.setPower(0);
-                }
-
-
-                taskNumber = 2;
-            }
-            startPositionL = robot.leftMotor.getCurrentPosition();
-            endPositionL = startPositionL + 1000;
-
-            while (opModeIsActive() && startPositionL < endPositionL) {
-                robot.rightMotor.setPower(10 * multR * correctR);
-                robot.leftMotor.setPower(20 * multL * correctL);
-            }
-            robot.rightMotor.setPower(0);
-            robot.leftMotor.setPower(0);
-
-            startPositionL = robot.leftMotor.getCurrentPosition();
-            endPositionL = startPositionL + 400;
-
-            while (opModeIsActive() && startPositionL < endPositionL) {
-                robot.rightMotor.setPower(10 * multR * correctR);
-                robot.leftMotor.setPower(10 * multL * correctL);
-            }
-            robot.rightMotor.setPower(0);
-            robot.leftMotor.setPower(0);
-
-            while (opModeIsActive() && degree < -3 && degree > 3) {
-                if (degree < -3) {
-                    robot.rightMotor.setPower(0.02);
-                    robot.leftMotor.setPower(-0.02);
-                } else {
-                    robot.rightMotor.setPower(-0.02);
-                    robot.leftMotor.setPower(0.02);
-                }
-                telemetry.addData("degree", degree);
-                telemetry.update();
-            }
-        }
+        telemetry.update();
     }
 }
