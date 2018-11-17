@@ -34,17 +34,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.vuforia.HINT;
-import com.vuforia.Vuforia;
-
-import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /**
  * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
@@ -60,9 +49,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name = "Innob8Teleop_Tinkerbell", group = "Tinkerbell")
+@TeleOp(name = "TDR_Innob8Teleop_Tinkerbell", group = "TDR")
 // @Disabled
-public class Innov8Teleop_Tinkerbell extends LinearOpMode {
+public class TDR_Innov8Teleop_Tinkerbell extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareInnov8Tinkerbell robot = new HardwareInnov8Tinkerbell();   // Use a Innov8's hardware map
@@ -90,7 +79,9 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         double mEndPos = 0;
         double michaelPower = 5;
 
-
+        /* Initialize the hardware variables.
+         * The init() method of the hardware class does all the work here
+         */
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
@@ -101,27 +92,19 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-    // Hook
+
+/* Hook
+
+*/
             while (gamepad1.right_bumper) {
                 robot.hook.setPosition(robot.hook.getPosition() + 0.005);
             }
 
             while (gamepad1.left_bumper) {
                 robot.hook.setPosition(robot.hook.getPosition() - 0.005);
-            }
-
-    // Driving
-
-            if (gamepad1.left_stick_button) {
-                leftDirection = leftDirection * -1;
-            }
-
-            if (gamepad1.right_stick_button) {
-                rightDirection = rightDirection * -1;
             }
 
             // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
@@ -137,11 +120,6 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 right /= max;
             }
 
-            robot.leftMotor.setPower(left*leftDirection*correctL*reduceDriveSpeed);
-            robot.rightMotor.setPower(right*rightDirection*correctR*reduceDriveSpeed);
-
-
-
             if (gamepad2.left_stick_y < 0) {
                 robot.liftMotor.setPower(20);
             }
@@ -149,6 +127,8 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 robot.liftMotor.setPower(0);
             }
             // For driving
+            robot.leftMotor.setPower(left*leftDirection*correctL*reduceDriveSpeed);
+            robot.rightMotor.setPower(right*rightDirection*correctR*reduceDriveSpeed);
 
 
 
@@ -268,8 +248,6 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             telemetry.addData("RDir: ", rightDirection);
             telemetry.addData("rightM: ", robot.rightMotor.getPower());
             telemetry.addData("leftM: ", robot.leftMotor.getPower());
-            telemetry.addData("left", left);
-            telemetry.addData("right", right);
             telemetry.addData("Lift: ", robot.liftMotor.getCurrentPosition());
             telemetry.addData("LiftSpeed: ", robot.liftMotor.getPower());
             telemetry.addData("right2: ", right2);
