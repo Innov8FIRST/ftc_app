@@ -73,6 +73,7 @@ public class HardwareInnov8Tinkerbell {
         leftMotor.setPower(0);
         rightMotor.setPower(0);
         liftMotor.setPower(0);
+        michael.setPower(0);
         //rightChain.setPower(0);
 
         // Set all motors to run without encoders.
