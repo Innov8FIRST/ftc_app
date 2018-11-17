@@ -50,17 +50,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
  * All device access is managed through the HardwarePushbot class.
  * The code is structured as a LinearOpMode
- *
+ * <p>
  * This particular OpMode executes a POV Game style Teleop for a PushBot
  * In this mode the left stick moves the robot FWD and back, the Right stick turns left and right.
  * It raises and lowers the claw using the Gampad Y and A buttons respectively.
  * It also opens and closes the claws slowly using the left and right Bumper buttons.
- *
+ * <p>
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name = "Innob8Teleop_Tinkerbell", group = "Tinkerbell")
+@TeleOp(name = "Innov8Teleop_Tinkerbell", group = "Tinkerbell")
 // @Disabled
 public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
@@ -110,7 +110,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Driver");    //
+        telemetry.addData("Say", "Hello Driver");
         telemetry.update();
 
 
@@ -171,22 +171,19 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             // Normalize the values so neither exceed +/- 1.0
             max = Math.max(Math.abs(left), Math.abs(right));
-            if (max > 1.0)
-            {
+            if (max > 1.0) {
                 left /= max;
                 right /= max;
             }
 
             if (gamepad2.left_stick_y < 0) {
                 robot.liftMotor.setPower(20);
-            }
-            else {
+            } else {
                 robot.liftMotor.setPower(0);
             }
             // For driving
-            robot.leftMotor.setPower(left*leftDirection*correctL*reduceDriveSpeed);
-            robot.rightMotor.setPower(right*rightDirection*correctR*reduceDriveSpeed);
-
+            robot.leftMotor.setPower(left * leftDirection * correctL * reduceDriveSpeed);
+            robot.rightMotor.setPower(right * rightDirection * correctR * reduceDriveSpeed);
 
 
             if (gamepad1.x) {
@@ -198,17 +195,13 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             }
 
 
-
-            if (gamepad1.dpad_up)
-            {
+            if (gamepad1.dpad_up) {
                 reduceDriveSpeed = 0.6;
             }
 
-            if (gamepad1.dpad_down)
-            {
+            if (gamepad1.dpad_down) {
                 reduceDriveSpeed = 0.2;
             }
-
 
 
             // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
@@ -217,8 +210,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             // Normalize the values so neither exceed +/- 1.0
             max = Math.max(Math.abs(left2), Math.abs(right2));
-            if (max > 1.0)
-            {
+            if (max > 1.0) {
                 left2 /= max;
                 right2 /= max;
             }
@@ -233,7 +225,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 leftDirection = leftDirection * -1;
             }
 
-            lift  = gamepad2.left_stick_y;
+            lift = gamepad2.left_stick_y;
             turn = -gamepad2.right_stick_y;
 
             // Normalize the values so neither exceed +/- 1.0
@@ -264,14 +256,15 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             if (gamepad2.right_bumper) {
 
             }
-                mStartPos = robot.michael.getCurrentPosition();
-                mEndPos = mStartPos - 10;
-                while (robot.michael.getCurrentPosition() > mEndPos) {
-                    robot.michael.setPower(michaelPower);
+            mStartPos = robot.michael.getCurrentPosition();
+            mEndPos = mStartPos - 10;
+            while (robot.michael.getCurrentPosition() > mEndPos) {
+                robot.michael.setPower(michaelPower);
             }
 
             while (gamepad2.x) {
-                robot.hook.setPosition(robot.hook.getPosition() + 0.005);;
+                robot.hook.setPosition(robot.hook.getPosition() + 0.005);
+                ;
             }
 
             while (gamepad2.b) {
@@ -287,13 +280,11 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             }
 
 
-            if (gamepad2.dpad_right)
-            {
+            if (gamepad2.dpad_right) {
 
             }
 
-            if (gamepad2.dpad_up)
-            {
+            if (gamepad2.dpad_up) {
                 robot.liftMotor.setPower(.1);
             }
 
