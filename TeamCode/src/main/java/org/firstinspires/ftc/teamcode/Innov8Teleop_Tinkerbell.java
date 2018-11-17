@@ -79,10 +79,6 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         double MID_SERVO = 0.5;
         double lift = 0;
         double turn = 0;
-        double OPEN_HAND_L = 0.5;
-        double CLOSE_HAND_L = 0.1;
-        double OPEN_HAND_R = 0.5;
-        double CLOSE_HAND_R = 0.9;
         double startPositionGlypht = 0;
         double reduceSpeedArm = 0.5;
         double reduceDriveSpeed = 0.4;
@@ -90,6 +86,9 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         double leftDirection = -1;
         double correctR = 0.9;
         double correctL = 1;
+        double mStartPos = 0;   //michael start and end positions
+        double mEndPos = 0;
+        double michaelPower = 5;
 
         /* Commenting out the Vuforia code in Teleop
 
@@ -188,19 +187,17 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             robot.leftMotor.setPower(left*leftDirection*correctL*reduceDriveSpeed);
             robot.rightMotor.setPower(right*rightDirection*correctR*reduceDriveSpeed);
 
-            /*
 
-            if (gamepad1.left_bumper) {
-                robot.handL.setPosition(OPEN_HAND_L);
-                robot.handR.setPosition(OPEN_HAND_R);
+
+            if (gamepad1.x) {
+                robot.croc.setPosition(1);
             }
 
-            if (gamepad1.right_bumper) {
-                robot.handL.setPosition(CLOSE_HAND_L);
-                robot.handR.setPosition(CLOSE_HAND_R);
+            if (gamepad1.b) {
+                robot.croc.setPosition(0);
             }
 
-            */
+
 
             if (gamepad1.dpad_up)
             {
@@ -212,27 +209,11 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 reduceDriveSpeed = 0.2;
             }
 
-            if (leftDirection == 1)
-            {
-                left2  = gamepad2.left_stick_y;
-            }
 
-            else {
-                left2  = -gamepad2.left_stick_y;
-            }
 
-            if (rightDirection == 1)
-            {
-                right2  = gamepad2.right_stick_y;
-            }
-
-            else {
-                right2  = -gamepad2.right_stick_y;
-            }
             // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
             // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
-            left2  = gamepad2.left_stick_y;
-            right2 = gamepad2.right_stick_y;
+
 
             // Normalize the values so neither exceed +/- 1.0
             max = Math.max(Math.abs(left2), Math.abs(right2));
@@ -268,37 +249,49 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             startPositionGlypht = robot.glypht.getCurrentPosition();
 
+            */
 
             if (gamepad2.left_bumper) {
-                robot.handL.setPosition(OPEN_HAND_L);
-                robot.handR.setPosition(OPEN_HAND_R);
+
+                mStartPos = robot.michael.getCurrentPosition();
+                mEndPos = mStartPos + 10;
+                while (robot.michael.getCurrentPosition() < mEndPos) {
+                    robot.michael.setPower(michaelPower);
+                }
+
             }
 
             if (gamepad2.right_bumper) {
-                robot.handL.setPosition(CLOSE_HAND_L);
-                robot.handR.setPosition(CLOSE_HAND_R);
+
+            }
+                mStartPos = robot.michael.getCurrentPosition();
+                mEndPos = mStartPos - 10;
+                while (robot.michael.getCurrentPosition() > mEndPos) {
+                    robot.michael.setPower(michaelPower);
             }
 
-            if (gamepad2.x) {
-                robot.handL.setPosition(END_SERVO);
-                robot.handR.setPosition(START_SERVO);
+            while (gamepad2.x) {
+                robot.hook.setPosition(robot.hook.getPosition() + 0.005);;
             }
 
-            if (gamepad2.b) {
-                robot.bigfoot.setPosition(START_SERVO);
+            while (gamepad2.b) {
+                robot.hook.setPosition(robot.hook.getPosition() - 0.005);
             }
 
             if (gamepad2.y) {
-                robot.bigfoot.setPosition(MID_SERVO);
+                robot.croc.setPosition(1);
             }
 
+            if (gamepad2.a) {
+                robot.croc.setPosition(0);
+            }
 
 
             if (gamepad2.dpad_right)
             {
-                robot.bigfoot.setPosition(.7);
+
             }
-            */
+
             if (gamepad2.dpad_up)
             {
                 robot.liftMotor.setPower(.1);
