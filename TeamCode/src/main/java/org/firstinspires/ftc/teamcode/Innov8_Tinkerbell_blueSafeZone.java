@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name = "Innov8_Tinkerbell_redSafeZone", group = "Auto")
+@Autonomous(name = "Innov8_Tinkerbell_blueSafeZone", group = "Auto")
 
-public class Innov8_Tinkerbell_redSafeZone extends LinearOpMode {
+public class Innov8_Tinkerbell_blueSafeZone extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareInnov8Tinkerbell robot = new HardwareInnov8Tinkerbell();   // Use Tinkerbell's hardware
@@ -22,8 +22,8 @@ public class Innov8_Tinkerbell_redSafeZone extends LinearOpMode {
     int FDrive = 2;
     int teamColor = 0;   //0 = red   or 1 = blue
     int taskNumber = 0;   //used to determine the step that should be executed
-    double multR = 0.09;
-    double multL = 0.02;
+    double multR = 0.0009;
+    double multL = 0.0009;
     double correctL = -1;  // 1 or -1
     double correctR = -1;  //1 or -1
     double right = 0;
@@ -47,36 +47,11 @@ public class Innov8_Tinkerbell_redSafeZone extends LinearOpMode {
         robot.leftMotor.setPower(0);
     }
 
-    public void centeredOnLine() {
-        robot.rightMotor.setPower(10 * multR * correctR);
-        robot.leftMotor.setPower(10 * multL * correctL);
-
-        while (opModeIsActive() && robot.leftMotor.getPower() != 0 || robot.rightMotor.getPower() != 0) {
-            telemetried();
-
-            telemetry.update();
-
-            if (robot.rightFruity.red() >= 150) {
-
-                robot.rightMotor.setPower(0);
-            }
-
-            if (robot.leftFruity.red() >= 300) {
-
-                robot.leftMotor.setPower(0);
-            }
-        }
-    }
-
     public void crocDrop() {
         crocPos = robot.croc.getPosition();
         robot.croc.setPosition(1);
-        telemetry.addData("croc", crocPos);
-        telemetry.update();
-        time = 0;
-        while (opModeIsActive() && time < 5000) {
-            time = time + 1;
-        }
+            telemetry.addData("croc", crocPos);
+            telemetry.update();
     }
 
     public void telemetried() {
@@ -95,7 +70,6 @@ public class Innov8_Tinkerbell_redSafeZone extends LinearOpMode {
         telemetry.addData("LeftPower", 10 * multL * correctL);
         telemetry.addData("right", right);
         telemetry.addData("degree", degree);
-        telemetry.addData("time", time);
         telemetry.update();
     }
 
@@ -106,22 +80,24 @@ public class Innov8_Tinkerbell_redSafeZone extends LinearOpMode {
 
         waitForStart();
 
-        startPositionL = 0;
-        startPositionR = 0;
+        telemetried();
+
+        forward(0.3, 3);
+        taskNumber = 2;
         telemetried();
 
         //Moves robot forward in front of minerals
-        forward(6, 40);
+        forward(1.5, 10);
         taskNumber = 3;
         telemetried();
 
         //After mineral has been knocked, moves forward to in front of safe zone
-        forward(8, 40);
+        forward(0.8, 10);
         taskNumber = 4;
         telemetried();
 
         //Gets robot to inside the safe zone to drop totem
-        forward(8, 40);
+        forward(0.6, 10);
         taskNumber = 5;
         telemetried();
 
