@@ -89,7 +89,7 @@ public class HardwarePushbotTDR
         TouSensor = hwMap.touchSensor.get("TouchSensor");//0, digital, can't make it TouchSensor
         FruitySensor = hwMap.colorSensor.get("FruitySensor");//, 12c
 
-/*;
+/*
         armMotor    = hwMap.dcMotor.get("left_arm");
 */
         MotorR.setDirection(DcMotor.Direction.REVERSE); //changed 12/5

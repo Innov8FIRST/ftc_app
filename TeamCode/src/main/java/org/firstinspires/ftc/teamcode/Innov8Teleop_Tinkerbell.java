@@ -94,12 +94,14 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         double nanaPower = 0;
         boolean gamepady = false;
         double nanaFor = 0;
+        double michaelPos = 0;
 
 
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");
+        telemetry.addData("michaelPower", robot.michael.getCurrentPosition());
         telemetry.update();
 
 
@@ -201,16 +203,17 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             robot.nana.setPower(nanaFor);
 
+            michaelPos = robot.michael.getCurrentPosition();
             if (gamepad2.left_bumper) {
-                michaelPower = 2;
-                robot.michael.setPower(michaelPower);
+                robot.michael.setPower(michaelPos + 150);
             } else if (gamepad2.right_bumper) {
-                michaelPower = -2;
-                robot.michael.setPower(michaelPower);
+                robot.michael.setPower(michaelPos - 165);
             } else {
                 michaelPower = 0;
                 robot.michael.setPower(michaelPower);
             }
+            telemetry.addData("michaelPower", robot.michael.getCurrentPosition());
+            telemetry.update();
 
             while (gamepad2.x) {
                 robot.hook.setPosition(robot.hook.getPosition() + 0.005);
@@ -224,6 +227,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             // Send telemetry message to signify robot running;
             telemetry.addData("lift", "%.2f", left);
             telemetry.addData("turn", "%.2f", right);
+            telemetry.addData("michaelPower", robot.michael.getCurrentPosition());
             telemetry.addData("LDir: ", leftDirection);
             telemetry.addData("RDir: ", rightDirection);
             telemetry.addData("rPower: ", rPower);
