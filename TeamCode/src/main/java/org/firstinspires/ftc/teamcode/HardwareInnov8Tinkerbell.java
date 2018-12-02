@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -30,6 +31,7 @@ public class HardwareInnov8Tinkerbell {
 
     public Servo hook = null;
     public Servo croc = null;
+    public CRServo nana = null;
 
 
     public ColorSensor leftFruity = null;
@@ -82,7 +84,7 @@ public class HardwareInnov8Tinkerbell {
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-      //  rightChain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //  rightChain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         michael.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Define and initialize ALL installed servos.
@@ -90,6 +92,8 @@ public class HardwareInnov8Tinkerbell {
         hook.setPosition(0.3);
         croc = hwMap.servo.get("croc");
         croc.setPosition(0.5);
+        nana = hwMap.crservo.get("nana");
+        nana.setPower(0);
     }
 
     /***

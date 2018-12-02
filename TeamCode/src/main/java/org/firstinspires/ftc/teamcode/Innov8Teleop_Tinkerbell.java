@@ -60,7 +60,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name = "Innob8Teleop_Tinkerbell", group = "Tinkerbell")
+@TeleOp(name = "Innov8Teleop_Tinkerbell", group = "Tinkerbell")
 // @Disabled
 public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
@@ -91,6 +91,9 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         double mStartPos = 0;   //michael start and end positions
         double mEndPos = 0;
         double michaelPower = 2;
+        double nanaPower = 0;
+        boolean gamepady = false;
+        double nanaFor = 0;
 
 
         robot.init(hardwareMap);
@@ -188,16 +191,15 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 leftDirection = leftDirection * -1;
             }
 
-            lift = gamepad2.left_stick_y;
-            turn = -gamepad2.right_stick_y;
+            nanaFor = -gamepad2.right_stick_y;
 
             // Normalize the values so neither exceed +/- 1.0
             max = Math.max(Math.abs(left), Math.abs(right));
             if (max > 1.0) {
-                lift /= max;
-                turn /= max;
+                nanaFor /= max;
             }
 
+            robot.nana.setPower(nanaFor);
 
             if (gamepad2.left_bumper) {
                 michaelPower = 2;
@@ -216,14 +218,6 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             while (gamepad2.b) {
                 robot.hook.setPosition(robot.hook.getPosition() - 0.005);
-            }
-
-            if (gamepad2.y) {
-                robot.croc.setPosition(1);
-            }
-
-            if (gamepad2.a) {
-                robot.croc.setPosition(0.5);
             }
 
 
