@@ -66,7 +66,7 @@ public class Innov8_Tinkerbell_redCrater extends LinearOpMode {
     public void turn(double feet, int power, int degree) {
         startPositionR = robot.rightMotor.getCurrentPosition();
         double encoder = feet * 180;
-        double degreeinput = degree * 
+        double degreeinput = 50 / degree;
         endPositionR = startPositionR + encoder;
         endPositionL = startPositionL + encoder;
 
@@ -75,10 +75,12 @@ public class Innov8_Tinkerbell_redCrater extends LinearOpMode {
             if (degree < 0) {
                 robot.rightMotor.setPower(power * degreeinput * multR * correctR);
                 robot.leftMotor.setPower(power * degree * multR * correctR);
+            } else {
+                robot.rightMotor.setPower(power * degree * multR * correctR);
+                robot.leftMotor.setPower(power * degreeinput * multR * correctR);
             }
-            else {
-                robot.rightMotor.setPower()
-            }
+            robot.rightMotor.setPower(0);
+            robot.leftMotor.setPower(0);
         }
     }
 
@@ -152,20 +154,47 @@ public class Innov8_Tinkerbell_redCrater extends LinearOpMode {
 
         //Decide which mineral to knock
 
-        //After mineral has been knocked, moves forward to in front of safe zone
-        forward(8, 40);
+        //After mineral has been knocked, moves backward to prepare for turn
+        backward(4, 40);
         taskNumber = 4;
         telemetried();
 
-        //Gets robot to inside the safe zone to drop totem
-        forward(, 40);
+        //Turns robot towards safe zone
+        turn(2, 30, -90);
         taskNumber = 5;
         telemetried();
 
-        crocDrop();
-        taskNumber = 9999;
+        //Moves forward towards safe zone
+        forward(10, 40);
+        taskNumber = 6;
         telemetried();
 
+        //Turns robot again towards safe zone
+        turn(1, 30, -30);
+        taskNumber = 7;
+        telemetried();
+
+        //Move forward the last time towards safe zone
+        forward(3, 20);
+        taskNumber = 8;
+        telemetried();
+
+        //Drops totem
+        crocDrop();
+        taskNumber = 9;
+        telemetried();
+
+        //Wait for totem to drop
+        wait(1000);
+        taskNumber = 10;
+        telemetried();
+
+        //Move backwards out of safe zone
+        backward(3, 30);
+        taskNumber = 11;
+        telemetried();
+        taskNumber = 9999;
+        telemetried();
         telemetry.update();
     }
 }
