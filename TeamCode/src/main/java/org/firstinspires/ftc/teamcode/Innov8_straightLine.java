@@ -49,14 +49,14 @@ public class Innov8_straightLine extends LinearOpMode {
 
             switch (taskNumber) {
 
-                case 0: // Drive forwards in a straight line - 2ft 7 in
+                case 0: // Drive forwards in a straight line - 2ft 7 in for 5000
 
-                    endPositionL = startPositionL - (5000 * multL);
+                    endPositionL = startPositionL - (100 * multL);
 
                     while (opModeIsActive() && robot.leftMotor.getCurrentPosition() >= endPositionL) {
                       //  robot.rightMotor.setPower(-50 * multR * correctR);
-                        robot.leftMotor.setPower(50 * multL * correctL);
-                        robot.rightMotor.setPower(50 * multR * correctR);
+                        robot.leftMotor.setPower(10 * multL * correctL);
+                        robot.rightMotor.setPower(10 * multR * correctR);
                         telemetry.addData("Case", taskNumber);
                         telemetry.addData("right", robot.rightMotor.getCurrentPosition());
                         telemetry.addData("left", robot.leftMotor.getCurrentPosition());
