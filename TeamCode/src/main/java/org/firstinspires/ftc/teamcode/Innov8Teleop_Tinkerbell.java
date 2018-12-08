@@ -131,7 +131,6 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             }
 
             // Driving
-
             if (gamepad1.left_stick_button) {
                 leftDirection = leftDirection * -1;
             }
@@ -226,8 +225,6 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 michaelPower = 0;
                 robot.michael.setPower(michaelPower);
             }
-            telemetry.addData("michaelPower", robot.michael.getCurrentPosition());
-            telemetry.update();
 
 
             if (gamepad2.left_trigger > 0.3) {
@@ -235,24 +232,19 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 robot.michael.setPower(leftTrigger);
 
 
-            }
-
-            else    {
+            } else {
                 leftTrigger = 0;
                 robot.michael.setPower(0);
-            };
+            }
 
 
             if (gamepad2.right_trigger > 0.3) {
                 rightTrigger = (gamepad2.right_trigger * -1);
                 robot.michael.setPower(rightTrigger);
-            }
-
-            else    {
+            } else {
                 rightTrigger = 0;
                 robot.michael.setPower(0);
-            };
-
+            }
 
             while (gamepad2.x) {
                 robot.hook.setPosition(robot.hook.getPosition() + 0.005);

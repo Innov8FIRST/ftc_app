@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name = "Innov8_Tinkerbell_redSafeZone", group = "Auto")
+@Autonomous(name = "Innov8_Tinkerbell_redSafeZoneDrop", group = "Auto")
 
 public class Innov8_Tinkerbell_redSafeZoneDrop extends LinearOpMode {
 
