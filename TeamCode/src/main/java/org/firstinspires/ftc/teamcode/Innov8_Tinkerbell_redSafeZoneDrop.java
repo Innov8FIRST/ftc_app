@@ -110,6 +110,9 @@ public class Innov8_Tinkerbell_redSafeZoneDrop extends LinearOpMode {
         telemetry.addData("right", right);
         telemetry.addData("degree", degree);
         telemetry.addData("time", time);
+        telemetry.addData("crocPos", crocPos);
+        telemetry.addData("liftPos", liftPos);
+        telemetry.addData("liftEnd", liftEnd);
         telemetry.update();
     }
 
