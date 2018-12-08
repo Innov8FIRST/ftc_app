@@ -78,6 +78,7 @@ public class TDR_Innov8Teleop_Tinkerbell extends LinearOpMode {
         double mStartPos = 0;   //michael start and end positions
         double mEndPos = 0;
         double michaelPower = 5;
+        double correctM = 7;
 
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
@@ -131,7 +132,6 @@ public class TDR_Innov8Teleop_Tinkerbell extends LinearOpMode {
             robot.rightMotor.setPower(right*rightDirection*correctR*reduceDriveSpeed);
 
 
-
             if (gamepad1.x) {
                 robot.croc.setPosition(1);
             }
@@ -139,7 +139,6 @@ public class TDR_Innov8Teleop_Tinkerbell extends LinearOpMode {
             if (gamepad1.b) {
                 robot.croc.setPosition(0);
             }
-
 
 
             if (gamepad1.dpad_up)
@@ -151,7 +150,6 @@ public class TDR_Innov8Teleop_Tinkerbell extends LinearOpMode {
             {
                 reduceDriveSpeed = 0.2;
             }
-
 
 
             // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
@@ -168,8 +166,6 @@ public class TDR_Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             // For driving
             robot.liftMotor.setPower(left2 * leftDirection * correctL * reduceDriveSpeed);
-            //robot.rightChain.setPower(right2 * rightDirection * correctR * reduceDriveSpeed);
-
 
             if (gamepad1.y) {
                 rightDirection = rightDirection * -1;
@@ -186,13 +182,9 @@ public class TDR_Innov8Teleop_Tinkerbell extends LinearOpMode {
                 turn /= max;
             }
 
+            if (gamepad2.left_trigger > 0.3);
+                robot.michael.setPower(gamepad2.left_trigger*correctM);
 
-            /*robot.glypht.setPower(lift);
-            robot.arm.setPower(turn*reduceSpeedArm);
-
-            startPositionGlypht = robot.glypht.getCurrentPosition();
-
-            */
 
             if (gamepad2.left_bumper) {
 
@@ -239,6 +231,8 @@ public class TDR_Innov8Teleop_Tinkerbell extends LinearOpMode {
             {
                 robot.liftMotor.setPower(.1);
             }
+
+
 
 
             // Send telemetry message to signify robot running;

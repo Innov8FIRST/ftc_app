@@ -79,7 +79,10 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         double MID_SERVO = 0.5;
         double lift = 0;
         double turn = 0;
-        double startPositionGlypht = 0;
+        double startLift = 0;
+        double currentLift = 0;
+        double endLift = 0;
+        double liftPower = 0;
         double reduceSpeedArm = 0.5;
         double reduceDriveSpeed = 0.4;
         double rightDirection = 1;
@@ -95,11 +98,17 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         boolean gamepady = false;
         double nanaFor = 0;
         double michaelPos = 0;
+        double leftTrigger = 0;
+        double rightTrigger = 0;
 
 
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
+        startLift = robot.liftMotor.getCurrentPosition();
+        currentLift = robot.liftMotor.getCurrentPosition();
+        telemetry.addData("startLift", startLift);
+        telemetry.addData("currentLift", currentLift);
         telemetry.addData("Say", "Hello Driver");
         telemetry.addData("michaelPower", robot.michael.getCurrentPosition());
         telemetry.update();
@@ -149,7 +158,8 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             robot.leftMotor.setPower(lPower);
             robot.rightMotor.setPower(rPower);
 
-            robot.liftMotor.setPower(gamepad2.left_stick_y);
+            liftPower = (gamepad2.left_stick_y);
+            robot.liftMotor.setPower(liftPower);
 
 
             if (gamepad1.x) {
@@ -219,6 +229,31 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             telemetry.addData("michaelPower", robot.michael.getCurrentPosition());
             telemetry.update();
 
+
+            if (gamepad2.left_trigger > 0.3) {
+                leftTrigger = gamepad2.left_trigger;
+                robot.michael.setPower(leftTrigger);
+
+
+            }
+
+            else    {
+                leftTrigger = 0;
+                robot.michael.setPower(0);
+            };
+
+
+            if (gamepad2.right_trigger > 0.3) {
+                rightTrigger = (gamepad2.right_trigger * -1);
+                robot.michael.setPower(rightTrigger);
+            }
+
+            else    {
+                rightTrigger = 0;
+                robot.michael.setPower(0);
+            };
+
+
             while (gamepad2.x) {
                 robot.hook.setPosition(robot.hook.getPosition() + 0.005);
             }
@@ -247,7 +282,12 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             telemetry.addData("left2: ", left2);
             telemetry.addData("righten", robot.rightMotor.getCurrentPosition());
             telemetry.addData("leften", robot.leftMotor.getCurrentPosition());
-            telemetry.addData("michaelPower", robot.michael.getCurrentPosition());
+            telemetry.addData("startLift", startLift);
+            telemetry.addData("currentLift", currentLift);
+            telemetry.addData("endLift", endLift);
+            telemetry.addData("liftPower", liftPower);
+            telemetry.addData("leftTrigger", leftTrigger);
+            telemetry.addData("rightTrigger", rightTrigger);
             telemetry.update();
 
             // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
