@@ -203,11 +203,15 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             robot.nana.setPower(nanaFor);
 
-            michaelPos = robot.michael.getCurrentPosition();
+            //michaelPos = robot.michael.getCurrentPosition();
             if (gamepad2.left_bumper) {
-                robot.michael.setPower(michaelPos + 150);
+                //robot.michael.setPower(michaelPos + 150);
+                robot.michael.setPower(michaelPower);
+
             } else if (gamepad2.right_bumper) {
-                robot.michael.setPower(michaelPos - 165);
+                //robot.michael.setPower(michaelPos - 165);
+                robot.michael.setPower(-michaelPower);
+
             } else {
                 michaelPower = 0;
                 robot.michael.setPower(michaelPower);
@@ -243,6 +247,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             telemetry.addData("left2: ", left2);
             telemetry.addData("righten", robot.rightMotor.getCurrentPosition());
             telemetry.addData("leften", robot.leftMotor.getCurrentPosition());
+            telemetry.addData("michaelPower", robot.michael.getCurrentPosition());
             telemetry.update();
 
             // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
