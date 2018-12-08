@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 public class Innov8_straightLine extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwareInnov8Duck robot = new HardwareInnov8Duck();   // Use a Innov8's hardware
+    HardwareInnov8Tinkerbell robot = new HardwareInnov8Tinkerbell();   // Use a Innov8's hardware
 
     /*Declare variables */
     double startPositionR = 0;
