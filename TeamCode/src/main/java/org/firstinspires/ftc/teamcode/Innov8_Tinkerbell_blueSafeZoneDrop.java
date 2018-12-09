@@ -58,9 +58,9 @@ public class Innov8_Tinkerbell_blueSafeZoneDrop extends LinearOpMode {
 
     public void drop() {
         liftPos = robot.liftMotor.getCurrentPosition();
-        liftEnd = liftPos - 300;
+        liftEnd = liftPos - 23000;
         while (opModeIsActive() && robot.liftMotor.getCurrentPosition() >= liftEnd) {
-            robot.liftMotor.setPower(-2);
+            robot.liftMotor.setPower(-20);
         }
         robot.liftMotor.setPower(0);
         while (opModeIsActive() && robot.hook.getPosition() <= 1) {

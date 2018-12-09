@@ -84,7 +84,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         double endLift = 0;
         double liftPower = 0;
         double reduceSpeedArm = 0.5;
-        double reduceDriveSpeed = 0.4;
+        double reduceDriveSpeed = 1;
         double rightDirection = 1;
         double leftDirection = 1;
         double rPower = 0;
@@ -104,9 +104,10 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
         robot.init(hardwareMap);
 
-        // Send telemetry message to signify robot waiting;
+        // Send telemetry message to signify robot waiting
         startLift = robot.liftMotor.getCurrentPosition();
         currentLift = robot.liftMotor.getCurrentPosition();
+        endLift = robot.liftMotor.getCurrentPosition() - 22600;
         telemetry.addData("startLift", startLift);
         telemetry.addData("currentLift", currentLift);
         telemetry.addData("Say", "Hello Driver");
@@ -159,7 +160,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             liftPower = (gamepad2.left_stick_y);
             robot.liftMotor.setPower(liftPower);
-
+            currentLift = robot.liftMotor.getCurrentPosition();
 
             if (gamepad1.x) {
                 robot.croc.setPosition(1);
@@ -177,12 +178,25 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             if (gamepad1.dpad_down) {
                 reduceDriveSpeed = 0.4;
             }
-            if (gamepad2.dpad_up) {
-                reduceDriveSpeed = 1;
+
+            if (gamepad1.dpad_right) {
+                reduceDriveSpeed = 1.5;
             }
 
+            if (gamepad1.dpad_left) {
+                reduceDriveSpeed = 0.75;
+            }
+            if (gamepad2.dpad_up) {
+                while (robot.liftMotor.getCurrentPosition() > endLift) {
+                    robot.liftMotor.setPower(-20);
+                }
+                robot.liftMotor.setPower(0);
+            }
             if (gamepad2.dpad_down) {
-                reduceDriveSpeed = 2;
+                while (robot.liftMotor.getCurrentPosition() < startLift) {
+                    robot.liftMotor.setPower(20);
+                }
+                robot.liftMotor.setPower(0);
             }
 
             // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
@@ -213,32 +227,12 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             robot.nana.setPower(nanaFor);
 
             //michaelPos = robot.michael.getCurrentPosition();
-            if (gamepad2.left_bumper) {
-                //robot.michael.setPower(michaelPos + 150);
-                robot.michael.setPower(michaelPower);
-
-            } else if (gamepad2.right_bumper) {
-                //robot.michael.setPower(michaelPos - 165);
-                robot.michael.setPower(-michaelPower);
-
-            } else {
-                michaelPower = 0;
-                robot.michael.setPower(michaelPower);
-            }
-
 
             if (gamepad2.left_trigger > 0.3) {
                 leftTrigger = gamepad2.left_trigger;
                 robot.michael.setPower(leftTrigger);
 
-
-            } else {
-                leftTrigger = 0;
-                robot.michael.setPower(0);
-            }
-
-
-            if (gamepad2.right_trigger > 0.3) {
+            } else if (gamepad2.right_trigger > 0.3) {
                 rightTrigger = (gamepad2.right_trigger * -1);
                 robot.michael.setPower(rightTrigger);
             } else {
@@ -253,7 +247,6 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             while (gamepad2.b) {
                 robot.hook.setPosition(robot.hook.getPosition() - 0.005);
             }
-
 
             // Send telemetry message to signify robot running;
             telemetry.addData("lift", "%.2f", left);
