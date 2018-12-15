@@ -228,10 +228,13 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             //michaelPos = robot.michael.getCurrentPosition();
 
+
+            //opens michael
             if (gamepad2.left_trigger > 0.3) {
                 leftTrigger = gamepad2.left_trigger;
                 robot.michael.setPower(leftTrigger);
 
+                //closes michael
             } else if (gamepad2.right_trigger > 0.3) {
                 rightTrigger = (gamepad2.right_trigger * -1);
                 robot.michael.setPower(rightTrigger);

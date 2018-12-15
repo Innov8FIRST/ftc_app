@@ -33,7 +33,7 @@ public class Innov8_Tinkerbell_blueSafeZone extends LinearOpMode {
 
     public void forward(double feet, int power) {
         startPositionL = robot.leftMotor.getCurrentPosition();
-        double encoder = feet * 161.29;
+        double encoder = feet * 280;
         endPositionL = startPositionL - encoder;
 
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition() >= endPositionL) {

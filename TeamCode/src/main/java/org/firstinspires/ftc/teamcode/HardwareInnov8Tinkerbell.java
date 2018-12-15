@@ -89,7 +89,7 @@ public class HardwareInnov8Tinkerbell {
 
         // Define and initialize ALL installed servos.
         hook = hwMap.servo.get("hook");
-        hook.setPosition(0.3);
+        hook.setPosition(0.15);
         croc = hwMap.servo.get("croc");
         croc.setPosition(0.5);
         nana = hwMap.crservo.get("nana");
