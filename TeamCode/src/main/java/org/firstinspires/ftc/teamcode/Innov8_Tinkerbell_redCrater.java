@@ -22,7 +22,7 @@ public class Innov8_Tinkerbell_redCrater extends LinearOpMode {
     int FDrive = 2;
     int teamColor = 0;   //0 = red   or 1 = blue
     int taskNumber = 0;   //used to determine the step that should be executed
-    double multR = 0.09;
+    double multR = 0.02;
     double multL = 0.02;
     double correctL = -1;  // 1 or -1
     double correctR = -1;  //1 or -1
@@ -30,6 +30,8 @@ public class Innov8_Tinkerbell_redCrater extends LinearOpMode {
     double left = 0;
     int degree = 0;
     double crocPos = 0;
+    double liftPos = 0;
+    double liftEnd = 0;
 
     public void forward(double feet, int power) {
         startPositionL = robot.leftMotor.getCurrentPosition();
@@ -84,6 +86,36 @@ public class Innov8_Tinkerbell_redCrater extends LinearOpMode {
         }
     }
 
+    public void drop() {
+        liftPos = robot.liftMotor.getCurrentPosition();
+        liftEnd = liftPos - 23000;
+        while (opModeIsActive() && robot.liftMotor.getCurrentPosition() >= liftEnd) {
+            robot.liftMotor.setPower(-20);
+        }
+        robot.liftMotor.setPower(0);
+
+        while (opModeIsActive() && robot.hook.getPosition() < 0.98) {
+            robot.hook.setPosition(1);
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                telemetry.addLine("wait failed");
+            }
+        }
+    }
+
+    public void release() {
+        if (opModeIsActive() && robot.hook.getPosition() <= 1) {
+            liftPos = robot.liftMotor.getCurrentPosition();
+            liftEnd = liftPos + 22000;
+            while (opModeIsActive() && robot.liftMotor.getCurrentPosition() <= liftEnd) {
+                robot.liftMotor.setPower(20);
+            }
+            robot.liftMotor.setPower(0);
+        }
+    }
+
     public void centeredOnLine() {
         robot.rightMotor.setPower(10 * multR * correctR);
         robot.leftMotor.setPower(10 * multL * correctL);
@@ -128,8 +160,8 @@ public class Innov8_Tinkerbell_redCrater extends LinearOpMode {
         telemetry.addData("endR", endPositionR);
         telemetry.addData("startL", startPositionL);
         telemetry.addData("endL", endPositionL);
-        telemetry.addData("RightPower", 10 * multR * correctR);
-        telemetry.addData("LeftPower", 10 * multL * correctL);
+        telemetry.addData("RightPower", robot.rightMotor.getPower());
+        telemetry.addData("LeftPower", robot.rightMotor.getPower());
         telemetry.addData("right", right);
         telemetry.addData("degree", degree);
         telemetry.addData("time", time);
@@ -147,51 +179,57 @@ public class Innov8_Tinkerbell_redCrater extends LinearOpMode {
         startPositionR = 0;
         telemetried();
 
+
+        //Drops robot from lander
+        drop();
+        taskNumber = 1;
+        telemetried();
+
         //Moves robot forward in front of minerals
         forward(4, 40);
-        taskNumber = 3;
+        taskNumber = 4;
         telemetried();
 
         //Decide which mineral to knock
 
         //After mineral has been knocked, moves backward to prepare for turn
         backward(4, 40);
-        taskNumber = 4;
+        taskNumber = 5;
         telemetried();
 
         //Turns robot towards safe zone
         turn(2, 30, -90);
-        taskNumber = 5;
+        taskNumber = 6;
         telemetried();
 
         //Moves forward towards safe zone
         forward(10, 40);
-        taskNumber = 6;
+        taskNumber = 7;
         telemetried();
 
         //Turns robot again towards safe zone
         turn(1, 30, -30);
-        taskNumber = 7;
+        taskNumber = 8;
         telemetried();
 
         //Move forward the last time towards safe zone
         forward(3, 20);
-        taskNumber = 8;
+        taskNumber = 9;
         telemetried();
 
         //Drops totem
         crocDrop();
-        taskNumber = 9;
+        taskNumber = 10;
         telemetried();
 
         //Wait for totem to drop
         wait(1000);
-        taskNumber = 10;
+        taskNumber = 11;
         telemetried();
 
         //Move backwards out of safe zone
         backward(3, 30);
-        taskNumber = 11;
+        taskNumber = 12;
         telemetried();
         taskNumber = 9999;
         telemetried();
