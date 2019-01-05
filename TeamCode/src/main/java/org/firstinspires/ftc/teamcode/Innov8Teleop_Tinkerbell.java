@@ -122,6 +122,10 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
+            //Makes sure lift does not go too far down
+            if (smee = 1) {
+                robot.liftMotor.setPower(0);
+            }
             // Hook
             while (gamepad1.right_bumper) {
                 robot.hook.setPosition(robot.hook.getPosition() + 0.005);
@@ -192,12 +196,6 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 }
                 robot.liftMotor.setPower(0);
             }
-            if (gamepad2.dpad_down) {
-                while (robot.liftMotor.getCurrentPosition() < startLift) {
-                    robot.liftMotor.setPower(20);
-                }
-                robot.liftMotor.setPower(0);
-            }
 
             // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
             // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
@@ -234,7 +232,6 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 leftTrigger = gamepad2.left_trigger;
                 robot.michael.setPower(leftTrigger);
 
-                //closes michael
             } else if (gamepad2.right_trigger > 0.3) {
                 rightTrigger = (gamepad2.right_trigger * -1);
                 robot.michael.setPower(rightTrigger);
