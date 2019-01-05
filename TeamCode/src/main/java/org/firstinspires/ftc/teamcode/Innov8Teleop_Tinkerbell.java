@@ -45,16 +45,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 /**
  * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
  * All device access is managed through the HardwarePushbot class.
  * The code is structured as a LinearOpMode
- * <p>
- * This particular OpMode executes a POV Game style Teleop for a PushBot
- * In this mode the left stick moves the robot FWD and back, the Right stick turns left and right.
- * It raises and lowers the claw using the Gampad Y and A buttons respectively.
- * It also opens and closes the claws slowly using the left and right Bumper buttons.
  * <p>
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
@@ -63,6 +62,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 @TeleOp(name = "Innov8Teleop_Tinkerbell", group = "Tinkerbell")
 // @Disabled
 public class Innov8Teleop_Tinkerbell extends LinearOpMode {
+    public DigitalChannel smee;
 
     /* Declare OpMode members. */
     HardwareInnov8Tinkerbell robot = new HardwareInnov8Tinkerbell();   // Use a Innov8's hardware map
@@ -104,6 +104,10 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
         robot.init(hardwareMap);
 
+        //smee = hardwareMap.get(DigitalChannel.class, "smee"); // get a reference to our digitalTouch object.
+        smee.setMode(DigitalChannel.Mode.INPUT); // set the digital channel to input.
+
+
         // Send telemetry message to signify robot waiting
         startLift = robot.liftMotor.getCurrentPosition();
         currentLift = robot.liftMotor.getCurrentPosition();
@@ -118,14 +122,24 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+        // while the op mode is active, loop and read the light levels.
+        // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
+        while (opModeIsActive()) {
+
+            // send the info back to driver station using telemetry function.
+            // if the digital channel returns true it's HIGH and the button is unpressed.
+            if (smee.getState() == true) {
+                telemetry.addData("smee", "Is Not Pressed");
+            } else {
+                telemetry.addData("smee", "Is Pressed");
+            }
+
+            telemetry.update();
+        }
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            //Makes sure lift does not go too far down
-            if (smee = 1) {
-                robot.liftMotor.setPower(0);
-            }
             // Hook
             while (gamepad1.right_bumper) {
                 robot.hook.setPosition(robot.hook.getPosition() + 0.005);

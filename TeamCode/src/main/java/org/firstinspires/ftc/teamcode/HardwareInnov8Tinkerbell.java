@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -33,9 +34,10 @@ public class HardwareInnov8Tinkerbell {
     public Servo croc = null;
     public CRServo nana = null;
 
-
     public ColorSensor leftFruity = null;
     public ColorSensor rightFruity = null;
+
+    public DigitalChannel smee;
 
     public static final double MID_SERVO = 0.5;
     public static final double ARM_UP_POWER = 0.45;
@@ -70,6 +72,9 @@ public class HardwareInnov8Tinkerbell {
         //rightChain.setDirection(DcMotor.Direction.FORWARD);
         michael = hwMap.dcMotor.get("michael");
         michael.setDirection(DcMotor.Direction.FORWARD);
+
+        smee = hwMap.get(DigitalChannel.class, "smee"); // get a reference to our digitalTouch object.
+        smee.setMode(DigitalChannel.Mode.INPUT); // set the digital channel to input.
 
         // Set all motors to zero power
         leftMotor.setPower(0);
