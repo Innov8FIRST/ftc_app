@@ -45,6 +45,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -62,7 +63,6 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 @TeleOp(name = "Innov8Teleop_Tinkerbell", group = "Tinkerbell")
 // @Disabled
 public class Innov8Teleop_Tinkerbell extends LinearOpMode {
-    public DigitalChannel smee;
 
     /* Declare OpMode members. */
     HardwareInnov8Tinkerbell robot = new HardwareInnov8Tinkerbell();   // Use a Innov8's hardware map
@@ -104,9 +104,6 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
         robot.init(hardwareMap);
 
-        //smee = hardwareMap.get(DigitalChannel.class, "smee"); // get a reference to our digitalTouch object.
-        smee.setMode(DigitalChannel.Mode.INPUT); // set the digital channel to input.
-
 
         // Send telemetry message to signify robot waiting
         startLift = robot.liftMotor.getCurrentPosition();
@@ -128,169 +125,170 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             // send the info back to driver station using telemetry function.
             // if the digital channel returns true it's HIGH and the button is unpressed.
-            if (smee.getState() == true) {
+            if (robot.smee.getState() == true) {
                 telemetry.addData("smee", "Is Not Pressed");
             } else {
                 telemetry.addData("smee", "Is Pressed");
-            }
-
-            telemetry.update();
-        }
-
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-
-            // Hook
-            while (gamepad1.right_bumper) {
-                robot.hook.setPosition(robot.hook.getPosition() + 0.005);
-            }
-
-            while (gamepad1.left_bumper) {
-                robot.hook.setPosition(robot.hook.getPosition() - 0.005);
-            }
-
-            // Driving
-            if (gamepad1.left_stick_button) {
-                leftDirection = leftDirection * -1;
-            }
-
-            if (gamepad1.right_stick_button) {
-                rightDirection = rightDirection * -1;
-            }
-
-            // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
-            // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
-            left = gamepad1.left_stick_y;
-            right = gamepad1.right_stick_y;
-
-            // Normalize the values so neither exceed +/- 1.0
-            max = Math.max(Math.abs(left), Math.abs(right));
-            if (max > 1.0) {
-                left /= max;
-                right /= max;
-            }
-
-
-            lPower = left * leftDirection * correctL * reduceDriveSpeed;
-            rPower = right * rightDirection * correctR * reduceDriveSpeed;
-            robot.leftMotor.setPower(lPower);
-            robot.rightMotor.setPower(rPower);
-
-            liftPower = (gamepad2.left_stick_y);
-            robot.liftMotor.setPower(liftPower);
-            currentLift = robot.liftMotor.getCurrentPosition();
-
-            if (gamepad1.x) {
-                robot.croc.setPosition(1);
-            }
-
-            if (gamepad1.b) {
-                robot.croc.setPosition(0.5);
-            }
-
-
-            if (gamepad1.dpad_up) {
-                reduceDriveSpeed = 1;
-            }
-
-            if (gamepad1.dpad_down) {
-                reduceDriveSpeed = 0.4;
-            }
-
-            if (gamepad1.dpad_right) {
-                reduceDriveSpeed = 1.5;
-            }
-
-            if (gamepad1.dpad_left) {
-                reduceDriveSpeed = 0.75;
-            }
-            if (gamepad2.dpad_up) {
-                while (robot.liftMotor.getCurrentPosition() > endLift) {
-                    robot.liftMotor.setPower(-20);
-                }
                 robot.liftMotor.setPower(0);
             }
 
-            // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
-            // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
-
-
-            // Normalize the values so neither exceed +/- 1.0
-            max = Math.max(Math.abs(left2), Math.abs(right2));
-            if (max > 1.0) {
-                left2 /= max;
-                right2 /= max;
-            }
-
-
-            if (gamepad1.y) {
-                rightDirection = rightDirection * -1;
-                leftDirection = leftDirection * -1;
-            }
-
-            nanaFor = -gamepad2.right_stick_y;
-
-            // Normalize the values so neither exceed +/- 1.0
-            max = Math.max(Math.abs(left), Math.abs(right));
-            if (max > 1.0) {
-                nanaFor /= max;
-            }
-
-            robot.nana.setPower(nanaFor);
-
-            //michaelPos = robot.michael.getCurrentPosition();
-
-
-            //opens michael
-            if (gamepad2.left_trigger > 0.3) {
-                leftTrigger = gamepad2.left_trigger;
-                robot.michael.setPower(leftTrigger);
-
-            } else if (gamepad2.right_trigger > 0.3) {
-                rightTrigger = (gamepad2.right_trigger * -1);
-                robot.michael.setPower(rightTrigger);
-            } else {
-                rightTrigger = 0;
-                robot.michael.setPower(0);
-            }
-
-            while (gamepad2.x) {
-                robot.hook.setPosition(robot.hook.getPosition() + 0.005);
-            }
-
-            while (gamepad2.b) {
-                robot.hook.setPosition(robot.hook.getPosition() - 0.005);
-            }
-
-            // Send telemetry message to signify robot running;
-            telemetry.addData("lift", "%.2f", left);
-            telemetry.addData("turn", "%.2f", right);
-            telemetry.addData("michaelPower", robot.michael.getCurrentPosition());
-            telemetry.addData("LDir: ", leftDirection);
-            telemetry.addData("RDir: ", rightDirection);
-            telemetry.addData("rPower: ", rPower);
-            telemetry.addData("lPower: ", lPower);
-            telemetry.addData("reduceDriveSpeed: ", reduceDriveSpeed);
-            telemetry.addData("rightM: ", robot.rightMotor.getPower());
-            telemetry.addData("leftM: ", robot.leftMotor.getPower());
-            telemetry.addData("left", left);
-            telemetry.addData("right", right);
-            telemetry.addData("Lift: ", robot.liftMotor.getCurrentPosition());
-            telemetry.addData("LiftSpeed: ", robot.liftMotor.getPower());
-            telemetry.addData("right2: ", right2);
-            telemetry.addData("left2: ", left2);
-            telemetry.addData("righten", robot.rightMotor.getCurrentPosition());
-            telemetry.addData("leften", robot.leftMotor.getCurrentPosition());
-            telemetry.addData("startLift", startLift);
-            telemetry.addData("currentLift", currentLift);
-            telemetry.addData("endLift", endLift);
-            telemetry.addData("liftPower", liftPower);
-            telemetry.addData("leftTrigger", leftTrigger);
-            telemetry.addData("rightTrigger", rightTrigger);
             telemetry.update();
 
-            // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
-            robot.waitForTick(40);
+            // run until the end of the match (driver presses STOP)
+            while (opModeIsActive()) {
+
+                // Hook
+                while (gamepad1.right_bumper) {
+                    robot.hook.setPosition(robot.hook.getPosition() + 0.005);
+                }
+
+                while (gamepad1.left_bumper) {
+                    robot.hook.setPosition(robot.hook.getPosition() - 0.005);
+                }
+
+                // Driving
+                if (gamepad1.left_stick_button) {
+                    leftDirection = leftDirection * -1;
+                }
+
+                if (gamepad1.right_stick_button) {
+                    rightDirection = rightDirection * -1;
+                }
+
+                // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
+                // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
+                left = gamepad1.left_stick_y;
+                right = gamepad1.right_stick_y;
+
+                // Normalize the values so neither exceed +/- 1.0
+                max = Math.max(Math.abs(left), Math.abs(right));
+                if (max > 1.0) {
+                    left /= max;
+                    right /= max;
+                }
+
+
+                lPower = left * leftDirection * correctL * reduceDriveSpeed;
+                rPower = right * rightDirection * correctR * reduceDriveSpeed;
+                robot.leftMotor.setPower(lPower);
+                robot.rightMotor.setPower(rPower);
+
+                liftPower = (gamepad2.left_stick_y);
+                robot.liftMotor.setPower(liftPower);
+                currentLift = robot.liftMotor.getCurrentPosition();
+
+                if (gamepad1.x) {
+                    robot.croc.setPosition(1);
+                }
+
+                if (gamepad1.b) {
+                    robot.croc.setPosition(0.5);
+                }
+
+
+                if (gamepad1.dpad_up) {
+                    reduceDriveSpeed = 1;
+                }
+
+                if (gamepad1.dpad_down) {
+                    reduceDriveSpeed = 0.4;
+                }
+
+                if (gamepad1.dpad_right) {
+                    reduceDriveSpeed = 1.5;
+                }
+
+                if (gamepad1.dpad_left) {
+                    reduceDriveSpeed = 0.75;
+                }
+                if (gamepad2.dpad_up) {
+                    while (robot.liftMotor.getCurrentPosition() > endLift) {
+                        robot.liftMotor.setPower(-20);
+                    }
+                    robot.liftMotor.setPower(0);
+                }
+
+                // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
+                // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
+
+
+                // Normalize the values so neither exceed +/- 1.0
+                max = Math.max(Math.abs(left2), Math.abs(right2));
+                if (max > 1.0) {
+                    left2 /= max;
+                    right2 /= max;
+                }
+
+
+                if (gamepad1.y) {
+                    rightDirection = rightDirection * -1;
+                    leftDirection = leftDirection * -1;
+                }
+
+                nanaFor = -gamepad2.right_stick_y;
+
+                // Normalize the values so neither exceed +/- 1.0
+                max = Math.max(Math.abs(left), Math.abs(right));
+                if (max > 1.0) {
+                    nanaFor /= max;
+                }
+
+                robot.nana.setPower(nanaFor);
+
+                //michaelPos = robot.michael.getCurrentPosition();
+
+
+                //opens michael
+                if (gamepad2.left_trigger > 0.3) {
+                    leftTrigger = gamepad2.left_trigger;
+                    robot.michael.setPower(leftTrigger);
+
+                } else if (gamepad2.right_trigger > 0.3) {
+                    rightTrigger = (gamepad2.right_trigger * -1);
+                    robot.michael.setPower(rightTrigger);
+                } else {
+                    rightTrigger = 0;
+                    robot.michael.setPower(0);
+                }
+
+                while (gamepad2.x) {
+                    robot.hook.setPosition(robot.hook.getPosition() + 0.005);
+                }
+
+                while (gamepad2.b) {
+                    robot.hook.setPosition(robot.hook.getPosition() - 0.005);
+                }
+
+                // Send telemetry message to signify robot running;
+                telemetry.addData("lift", "%.2f", left);
+                telemetry.addData("turn", "%.2f", right);
+                telemetry.addData("michaelPower", robot.michael.getCurrentPosition());
+                telemetry.addData("LDir: ", leftDirection);
+                telemetry.addData("RDir: ", rightDirection);
+                telemetry.addData("rPower: ", rPower);
+                telemetry.addData("lPower: ", lPower);
+                telemetry.addData("reduceDriveSpeed: ", reduceDriveSpeed);
+                telemetry.addData("rightM: ", robot.rightMotor.getPower());
+                telemetry.addData("leftM: ", robot.leftMotor.getPower());
+                telemetry.addData("left", left);
+                telemetry.addData("right", right);
+                telemetry.addData("Lift: ", robot.liftMotor.getCurrentPosition());
+                telemetry.addData("LiftSpeed: ", robot.liftMotor.getPower());
+                telemetry.addData("right2: ", right2);
+                telemetry.addData("left2: ", left2);
+                telemetry.addData("righten", robot.rightMotor.getCurrentPosition());
+                telemetry.addData("leften", robot.leftMotor.getCurrentPosition());
+                telemetry.addData("startLift", startLift);
+                telemetry.addData("currentLift", currentLift);
+                telemetry.addData("endLift", endLift);
+                telemetry.addData("liftPower", liftPower);
+                telemetry.addData("leftTrigger", leftTrigger);
+                telemetry.addData("rightTrigger", rightTrigger);
+                telemetry.update();
+
+                // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
+                robot.waitForTick(40);
+            }
         }
     }
 }
