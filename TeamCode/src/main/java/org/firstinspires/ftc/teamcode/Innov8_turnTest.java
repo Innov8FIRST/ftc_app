@@ -1,7 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name = "Innov8_turnTest", group = "Auto")
 
@@ -27,73 +35,37 @@ public class Innov8_turnTest extends LinearOpMode {
     double correctL = 1;
     double correctR = 1;
 
+    BNO055IMU imu;
+
     public void runOpMode() throws InterruptedException {
 
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
         robot.init(hardwareMap);                                // Servo mid position
-
-        startPositionR = robot.rightMotor.getCurrentPosition();
-        startPositionL = robot.leftMotor.getCurrentPosition();
-        telemetry.addData("startR", startPositionR);
-        telemetry.addData("startL", startPositionL);
-        telemetry.addData("CurrentR", robot.rightMotor.getCurrentPosition());
-        telemetry.addData("CurrentL", robot.leftMotor.getCurrentPosition());
-        telemetry.addData("EndR", endPositionR);
-        telemetry.addData("EndL", endPositionL);
-        telemetry.update();
-    }
-
-    public void turn(double power, int degree) {
-        startPositionR = robot.rightMotor.getCurrentPosition();
-        double degreeinput = 50 / degree;
-        double encoder = degreeinput;
-        endPositionR = startPositionR + encoder;
-        endPositionL = startPositionL + encoder;
-
-        while (opModeIsActive() && robot.rightMotor.getCurrentPosition() >= endPositionR) {
-            telemetry.addData("startR", startPositionR);
-            telemetry.addData("startL", startPositionL);
-            telemetry.addData("CurrentR", robot.rightMotor.getCurrentPosition());
-            telemetry.addData("CurrentL", robot.leftMotor.getCurrentPosition());
-            telemetry.addData("EndR", endPositionR);
-            telemetry.addData("EndL", endPositionL);
-            telemetry.update();
-            if (degree < 0) {
-                robot.rightMotor.setPower(power * degreeinput * multR * correctR);
-                robot.leftMotor.setPower(power * degree * multR * correctR);
-            } else {
-                robot.rightMotor.setPower(power * degree * multR * correctR);
-                robot.leftMotor.setPower(power * degreeinput * multR * correctR);
-            }
-            robot.rightMotor.setPower(0);
-            robot.leftMotor.setPower(0);
-        }
 
         waitForStart();
 
 
         while (opModeIsActive() && taskNumber != 9999) {
-
-            turn(0.5, 90);
-
-            time = 0;
-            while (time < 1000) {
-                robot.rightMotor.setPower(0.5 * multR);
-                robot.leftMotor.setPower(0.5 * multL);
-                time = time + 1;
-            }
-            robot.rightMotor.setPower(0);
-            robot.leftMotor.setPower(0);
-
-            turn(0.5, -180);
-
-            time = 0;
-            while (time < 1000) {
-                robot.rightMotor.setPower(0.5 * multR);
-                robot.leftMotor.setPower(0.5 * multL);
-                time = time + 1;
-            }
-            robot.rightMotor.setPower(0);
-            robot.leftMotor.setPower(0);
+            Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            startPositionR = robot.rightMotor.getCurrentPosition();
+            startPositionL = robot.leftMotor.getCurrentPosition();
+            telemetry.addData("first", angles.firstAngle);
+            telemetry.addData("second", angles.secondAngle);
+            telemetry.addData("third", angles.thirdAngle);
+            telemetry.update();
         }
     }
 }
