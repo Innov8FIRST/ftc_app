@@ -168,7 +168,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 robot.leftMotor.setPower(lPower);
                 robot.rightMotor.setPower(rPower);
 
-                if (robot.smee.getState()==false && gamepad2.left_stick_y <0) {
+                if (robot.smee.getState()==false && gamepad2.left_stick_y > 0) {
                     liftPower = 0;
                     robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 }
