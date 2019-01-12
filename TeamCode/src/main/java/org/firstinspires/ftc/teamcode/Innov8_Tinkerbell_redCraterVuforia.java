@@ -27,6 +27,7 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
     private static final String VUFORIA_KEY = "ATVwosb/////AAAAGYlO5qoc6kZagqZX6jvBKGgVjiVqbwuCKCZeIQTBkfNwsuJY/+oa3DHJbR/aFFfPF2A/bsi9cY36hUzYuOhFVBmWjYzVbQEh3YPoVATeaQEr/P6hNDA2AbW1Xbq0+hxqiYKpA1vNu22pVPOMW7MDmDst4HiuDLEXATZC3boSoLU6d9up0qPxZbZ+3fjXMnMTr6QkXIle3O7dfg/FVM09i/CIsq/Harcgg6lCoOYnrw70TEmPXOAxYdMh6Dh2KxZ8uAfHLur0U2adA0mWUKS7+z8Axq6jlH5oY8LOXp0FqX6A820mkqeDZz5DCkupkLOuTw/taIqz4vf2ewHRB8xGt7hEu34ZOr1TWOpT0bVnLLhB";
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod; //Calls the Tensor Flow Object Detection
+    private static final double FEET_TO_ENCODER = 180;
 
     /* Declare OpMode members. */
     HardwareInnov8Tinkerbell robot = new HardwareInnov8Tinkerbell();   // Use Tinkerbell's hardware
@@ -47,7 +48,7 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
     double correctR = -1;  //1 or -1
     double right = 0;
     double left = 0; //Shows distance to the left side of a detected object
-    double crocPos = 0; 
+    double crocPos = 0;
     double liftPos = 0;
     double liftEnd = 0;
     double confi = 0;
@@ -56,11 +57,12 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
     double goldMineralX = 0;
     double silverMineral1X = 0;
     double silverMineral2X = 0;
+    double degreeten = 0; //This is the TensorFlow degree returned from the phone
 
 
     public void forward(double feet, int power) {
         startPositionL = robot.leftMotor.getCurrentPosition();
-        double encoder = feet * 180;
+        double encoder = feet * FEET_TO_ENCODER;
         endPositionL = startPositionL - encoder;
 
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition() >= endPositionL) {
@@ -76,7 +78,7 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
 
     public void backward(double feet, int power) {
         startPositionR = robot.rightMotor.getCurrentPosition();
-        double encoder = feet * -180;
+        double encoder = -feet * FEET_TO_ENCODER;
         endPositionR = startPositionR + encoder;
 
         while (opModeIsActive() && robot.rightMotor.getCurrentPosition() <= endPositionR) {
@@ -90,10 +92,10 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
         robot.leftMotor.setPower(0);
     }
 
-    public void turn(double feet, int power, int degree) {
+    public void turn(double power, int degree) {
         startPositionR = robot.rightMotor.getCurrentPosition();
-        double encoder = feet * 180;
         double degreeinput = 50 / degree;
+        double encoder = degreeinput;
         endPositionR = startPositionR + encoder;
         endPositionL = startPositionL + encoder;
 
@@ -115,7 +117,7 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
         liftPos = robot.liftMotor.getCurrentPosition();
         liftEnd = liftPos - 23000;
         while (opModeIsActive() && robot.liftMotor.getCurrentPosition() >= liftEnd) {
-            robot.liftMotor.setPower(-20);
+            robot.liftMotor.setPower(-1);
         }
         robot.liftMotor.setPower(0);
 
@@ -135,14 +137,37 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
             liftPos = robot.liftMotor.getCurrentPosition();
             liftEnd = liftPos + 22000;
             while (opModeIsActive() && robot.liftMotor.getCurrentPosition() <= liftEnd) {
-                robot.liftMotor.setPower(20);
+                robot.liftMotor.setPower(1);
             }
             robot.liftMotor.setPower(0);
         }
     }
 
-    public void seeBlock() {
+    public void centeredOnBlock() {
+        if (degreeten <= -0.1) { //This uses the TensorFlow degree returned from the phone
+            robot.rightMotor.setPower(1 * degreeten);
+            robot.leftMotor.setPower(-1 * degreeten);
+        } else if (degreeten >= 0.1) {
+            robot.rightMotor.setPower(-1 * degreeten);
+            robot.leftMotor.setPower(1 * degreeten);
+        }
+    }
 
+    public void seeBlock() {
+        if (confi < 0.9) {
+            turn(0.2, -90);
+            if (confi > 0.9) {
+                centeredOnBlock();
+            }
+        }
+        else {
+            centeredOnBlock();
+        }
+        if (confi < 0.9) ;
+        turn(0.2, 180);
+        if (confi > 0.9) {
+           centeredOnBlock();
+        }
     }
 
     public void idenMineral() {
@@ -174,11 +199,11 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
                         } else {
                             silverMineral2X = (int) recognition.getLeft();
                         }
-                        degree = recognition.estimateAngleToObject(AngleUnit.DEGREES);
+                        degreeten = recognition.estimateAngleToObject(AngleUnit.DEGREES); //This is the TensorFlow degree returned from the phone
                         confi = recognition.getConfidence();
                         right = recognition.getRight();
                         width = recognition.getWidth();
-                        telemetry.addData("degree", degree);
+                        telemetry.addData("degree", degreeten); //This is the TensorFlow degree returned from the phone
                         telemetry.addData("confi", confi);
                         telemetry.addData("right", right);
                         telemetry.addData("width", width);
@@ -196,12 +221,12 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
                         }
                     }
                     if (confi > 0.9) {
-                        if (degree <= -0.1) {
-                            robot.rightMotor.setPower(2 * degree);
-                            robot.leftMotor.setPower(-2 * degree);
-                        } else if (degree >= 0.1) {
-                            robot.rightMotor.setPower(-2 * degree);
-                            robot.leftMotor.setPower(2 * degree);
+                        if (degreeten <= -0.1) { //This uses the TensorFlow degree returned from the phone
+                            robot.rightMotor.setPower(1 * degreeten);
+                            robot.leftMotor.setPower(-1 * degreeten);
+                        } else if (degreeten >= 0.1) {
+                            robot.rightMotor.setPower(-1 * degreeten);
+                            robot.leftMotor.setPower(1 * degreeten);
                         } else {
                             robot.rightMotor.setPower(0);
                             robot.leftMotor.setPower(0);
@@ -257,10 +282,10 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
     }
 
     public void knockMineral() {
-        endPositionR = robot.rightMotor.getCurrentPosition() + 540;
+        endPositionR = robot.rightMotor.getCurrentPosition() + FEET_TO_ENCODER * 3;
         while (endPositionR < robot.rightMotor.getCurrentPosition()) {
-            robot.rightMotor.setPower(10*correctR);
-            robot.leftMotor.setPower(10*correctL);
+            robot.rightMotor.setPower(10 * correctR);
+            robot.leftMotor.setPower(10 * correctL);
         }
         robot.rightMotor.setPower(0);
         robot.leftMotor.setPower(0);
@@ -294,7 +319,7 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
         telemetry.addData("right", right);
         telemetry.addData("degree", degree);
         telemetry.addData("time", time);
-        telemetry.addData("degree", degree);
+        telemetry.addData("degreeten", degreeten);
         telemetry.addData("confi", confi);
         telemetry.addData("right", right);
         telemetry.addData("width", width);
@@ -336,7 +361,7 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
         telemetried();
 
         //Turns robot towards safe zone
-        turn(2, 30, -90);
+        turn(30, -90);
         taskNumber = 6;
         telemetried();
 
@@ -346,7 +371,7 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
         telemetried();
 
         //Turns robot again towards safe zone
-        turn(1, 30, -30);
+        turn(30, -30);
         taskNumber = 8;
         telemetried();
 
