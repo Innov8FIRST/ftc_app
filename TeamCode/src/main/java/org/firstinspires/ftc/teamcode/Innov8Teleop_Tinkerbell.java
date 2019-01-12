@@ -125,10 +125,13 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             // send the info back to driver station using telemetry function.
             // if the digital channel returns true it's HIGH and the button is unpressed.
+
             if (robot.smee.getState() == true) {
                 telemetry.addData("smee", "Is Not Pressed");
+                telemetry.update();
             } else {
                 telemetry.addData("smee", "Is Pressed");
+                telemetry.update();
                 robot.liftMotor.setPower(0);
             }
 
@@ -284,6 +287,11 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 telemetry.addData("liftPower", liftPower);
                 telemetry.addData("leftTrigger", leftTrigger);
                 telemetry.addData("rightTrigger", rightTrigger);
+                if (robot.smee.getState() == true) {
+                    telemetry.addData("smee", "Is Not Pressed");
+                } else {
+                    telemetry.addData("smee", "Is Pressed");
+                }
                 telemetry.update();
 
                 // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
