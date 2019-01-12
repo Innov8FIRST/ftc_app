@@ -34,6 +34,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.vuforia.HINT;
 import com.vuforia.Vuforia;
 
@@ -176,9 +177,28 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 robot.leftMotor.setPower(lPower);
                 robot.rightMotor.setPower(rPower);
 
-                liftPower = (gamepad2.left_stick_y);
+                if (robot.smee.getState()==false && gamepad2.left_stick_y <0) {
+                    liftPower = 0;
+                    robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                }
+                
+                else {
+                    liftPower = (gamepad2.left_stick_y);
+                }
+
                 robot.liftMotor.setPower(liftPower);
                 currentLift = robot.liftMotor.getCurrentPosition();
+
+
+                if (robot.smee.getState() == true) {
+                    telemetry.addData("smee", "Is Not Pressed");
+                    telemetry.update();
+                } else {
+                    telemetry.addData("smee", "Is Pressed");
+                    telemetry.update();
+                    robot.liftMotor.setPower(0);
+                }
+
 
                 if (gamepad1.x) {
                     robot.croc.setPosition(1);
