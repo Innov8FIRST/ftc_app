@@ -127,16 +127,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             // send the info back to driver station using telemetry function.
             // if the digital channel returns true it's HIGH and the button is unpressed.
 
-            if (robot.smee.getState() == true) {
-                telemetry.addData("smee", "Is Not Pressed");
-                telemetry.update();
-            } else {
-                telemetry.addData("smee", "Is Pressed");
-                telemetry.update();
-                robot.liftMotor.setPower(0);
-            }
 
-            telemetry.update();
 
             // run until the end of the match (driver presses STOP)
             while (opModeIsActive()) {
@@ -181,7 +172,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                     liftPower = 0;
                     robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 }
-                
+
                 else {
                     liftPower = (gamepad2.left_stick_y);
                 }
@@ -189,15 +180,6 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 robot.liftMotor.setPower(liftPower);
                 currentLift = robot.liftMotor.getCurrentPosition();
 
-
-                if (robot.smee.getState() == true) {
-                    telemetry.addData("smee", "Is Not Pressed");
-                    telemetry.update();
-                } else {
-                    telemetry.addData("smee", "Is Pressed");
-                    telemetry.update();
-                    robot.liftMotor.setPower(0);
-                }
 
 
                 if (gamepad1.x) {
