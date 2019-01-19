@@ -4,12 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.robotcore.external.ClassFactory; //Imports all Vuforia information
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
@@ -18,9 +12,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "Innov8_Tinkerbell_redCraterVuforia", group = "Auto")
+@Autonomous(name = "Innov8_Tinkerbell_Depot", group = "Auto")
 
-public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
+public class Innov8_Tinkerbell_Depot extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite"; //Establish name for minerals
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
@@ -58,9 +52,10 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
     double silverMineral1X = 0;
     double silverMineral2X = 0;
     double degreeten = 0; //This is the TensorFlow degree returned from the phone
+    int mineralposition = 1;
 
 
-    public void forward(double feet, int power) {
+    public void forward(double feet, double power) {
         startPositionL = robot.leftMotor.getCurrentPosition();
         double encoder = feet * FEET_TO_ENCODER;
         endPositionL = startPositionL - encoder;
@@ -76,7 +71,7 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
         robot.leftMotor.setPower(0);
     }
 
-    public void backward(double feet, int power) {
+    public void backward(double feet, double power) {
         startPositionR = robot.rightMotor.getCurrentPosition();
         double encoder = -feet * FEET_TO_ENCODER;
         endPositionR = startPositionR + encoder;
@@ -153,90 +148,24 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
         }
     }
 
-    public void seeBlock() {
-        if (confi < 0.9) {
-            turn(0.2, -90);
-            if (confi > 0.9) {
-                centeredOnBlock();
-            }
-        }
-        else {
-            centeredOnBlock();
-        }
-        if (confi < 0.9) ;
-        turn(0.2, 180);
-        if (confi > 0.9) {
-           centeredOnBlock();
-        }
-    }
-
-    public void idenMineral() {
-        initVuforia();
-
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            initTfod();
-        } else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-        }
-        /** Activate Tensor Flow Object Detection. */
+    public double idenMineral() {
         if (tfod != null) {
-            tfod.activate();
-        }
-
-        while (opModeIsActive()) {
-            if (tfod != null) {
-                // getUpdatedRecognitions() will return null if no new information is available since
-                // the last time that call was made.
-                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions != null) {
-                    telemetry.addData("# Object Detected", updatedRecognitions.size());
-                    goldMineralX = -1;
-                    for (Recognition recognition : updatedRecognitions) {
-                        if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                            goldMineralX = (int) recognition.getLeft();
-                        } else if (recognition.getLeft() == -1) {
-                            silverMineral1X = (int) recognition.getLeft();
-                        } else {
-                            silverMineral2X = (int) recognition.getLeft();
-                        }
-                        degreeten = recognition.estimateAngleToObject(AngleUnit.DEGREES); //This is the TensorFlow degree returned from the phone
+            // getUpdatedRecognitions() will return null if no new information is available since
+            // the last time that call was made.
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+                telemetry.addData("# Object Detected", updatedRecognitions.size());
+                goldMineralX = -1;
+                for (Recognition recognition : updatedRecognitions) {
+                    if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                        goldMineralX = (int) recognition.getLeft();
                         confi = recognition.getConfidence();
-                        right = recognition.getRight();
-                        width = recognition.getWidth();
-                        telemetry.addData("degree", degreeten); //This is the TensorFlow degree returned from the phone
-                        telemetry.addData("confi", confi);
-                        telemetry.addData("right", right);
-                        telemetry.addData("width", width);
-                        telemetry.addData("left", goldMineralX);
-                        telemetry.update();
-
-                    }
-                    if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
-                        if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
-                            telemetry.addData("Gold Mineral Position", "Left");
-                        } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
-                            telemetry.addData("Gold Mineral Position", "Right");
-                        } else {
-                            telemetry.addData("Gold Mineral Position", "Center");
-                        }
-                    }
-                    if (confi > 0.9) {
-                        if (degreeten <= -0.1) { //This uses the TensorFlow degree returned from the phone
-                            robot.rightMotor.setPower(1 * degreeten);
-                            robot.leftMotor.setPower(-1 * degreeten);
-                        } else if (degreeten >= 0.1) {
-                            robot.rightMotor.setPower(-1 * degreeten);
-                            robot.leftMotor.setPower(1 * degreeten);
-                        } else {
-                            robot.rightMotor.setPower(0);
-                            robot.leftMotor.setPower(0);
-                        }
-                    } else {
-                        seeBlock();
+                        return confi;
                     }
                 }
             }
         }
+        return 0;
     }
 
     private void initVuforia() {
@@ -244,7 +173,7 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        parameters.cameraDirection = CameraDirection.BACK;
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -258,26 +187,9 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
-    }
-
-    public void centeredOnLine() {
-        robot.rightMotor.setPower(10 * multR * correctR);
-        robot.leftMotor.setPower(10 * multL * correctL);
-
-        while (opModeIsActive() && robot.leftMotor.getPower() != 0 || robot.rightMotor.getPower() != 0) {
-            telemetried();
-
-            telemetry.update();
-
-            if (robot.rightFruity.red() >= 150) {
-
-                robot.rightMotor.setPower(0);
-            }
-
-            if (robot.leftFruity.red() >= 300) {
-
-                robot.leftMotor.setPower(0);
-            }
+        // Activate Tensor Flow Object Detection
+        if (tfod != null) {
+            tfod.activate();
         }
     }
 
@@ -304,10 +216,6 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
 
     public void telemetried() {
         telemetry.addData("Case", taskNumber);
-        telemetry.addData("RightRed", robot.rightFruity.red());
-        telemetry.addData("RightBlue", robot.rightFruity.blue());
-        telemetry.addData("LeftRed", robot.leftFruity.red());
-        telemetry.addData("LeftBlue", robot.leftFruity.blue());
         telemetry.addData("right", robot.rightMotor.getCurrentPosition());
         telemetry.addData("left", robot.leftMotor.getCurrentPosition());
         telemetry.addData("startR", startPositionR);
@@ -324,6 +232,7 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
         telemetry.addData("right", right);
         telemetry.addData("width", width);
         telemetry.addData("left", goldMineralX);
+        telemetry.addData("position", mineralposition);
         telemetry.update();
         telemetry.update();
     }
@@ -331,6 +240,8 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         robot.init(hardwareMap);                                // Servo mid position
+        initVuforia();
+        initTfod();
         telemetried();
 
         waitForStart();
@@ -339,17 +250,29 @@ public class Innov8_Tinkerbell_redCraterVuforia extends LinearOpMode {
         startPositionR = 0;
         telemetried();
 
-
         //Drops robot from lander
         drop();
         taskNumber = 1;
         telemetried();
 
-        //Decide which mineral to knock
-        idenMineral();
-        taskNumber = 2;
+        forward(0.3, 0.4);
         telemetried();
 
+        //Decide which mineral to knock
+        taskNumber = 2;
+        confi = idenMineral();
+        telemetried();
+
+        if (confi <= 0.9) {
+            turn(0.3, -30);
+            mineralposition = mineralposition + 1;
+            confi = idenMineral();
+            if (confi <= 0.9) {
+                turn(0.3, 60);
+                mineralposition = mineralposition + 1;
+                confi = idenMineral();
+            }
+        }
         //Move robot to knock mineral
         knockMineral();
         taskNumber = 4;

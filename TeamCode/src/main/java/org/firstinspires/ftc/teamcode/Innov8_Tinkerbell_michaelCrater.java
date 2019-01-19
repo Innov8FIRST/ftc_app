@@ -1,7 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name = "Innov8_Tinkerbell_michaelCrater", group = "Auto")
 
@@ -32,6 +39,8 @@ public class Innov8_Tinkerbell_michaelCrater extends LinearOpMode {
     double crocPos = 0;
     double liftPos = 0;
     double liftEnd = 0;
+
+    BNO055IMU imu;
 
     public void forward(double feet, int power) {
         startPositionL = robot.leftMotor.getCurrentPosition();
@@ -65,25 +74,37 @@ public class Innov8_Tinkerbell_michaelCrater extends LinearOpMode {
         robot.leftMotor.setPower(0);
     }
 
-    public void turn(double feet, int power, int degree) {
-        startPositionR = robot.rightMotor.getCurrentPosition();
-        double encoder = feet * 180;
-        double degreeinput = 50 / degree;
-        endPositionR = startPositionR + encoder;
-        endPositionL = startPositionL + encoder;
+    public void gyro() {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
-        while (opModeIsActive() && robot.rightMotor.getCurrentPosition() >= endPositionR) {
-            telemetried();
-            if (degree < 0) {
-                robot.rightMotor.setPower(power * degreeinput * multR * correctR);
-                robot.leftMotor.setPower(power * degree * multR * correctR);
-            } else {
-                robot.rightMotor.setPower(power * degree * multR * correctR);
-                robot.leftMotor.setPower(power * degreeinput * multR * correctR);
-            }
-            robot.rightMotor.setPower(0);
-            robot.leftMotor.setPower(0);
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+    }
+
+    public void turn(double power, int degree) { //right is negative
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        telemetry.addData("first", angles.firstAngle);
+        telemetry.update();
+
+        int direction = degree/Math.abs(degree);
+        double endAng = degree + angles.firstAngle;
+
+        while (opModeIsActive() && Math.abs(angles.firstAngle - endAng) > 0.25) {
+            robot.rightMotor.setPower(0.3 *direction);
+            robot.leftMotor.setPower(0.3 * direction);
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         }
+        robot.rightMotor.setPower(0);
+        robot.leftMotor.setPower(0);
     }
 
     public void drop() {
@@ -132,16 +153,6 @@ public class Innov8_Tinkerbell_michaelCrater extends LinearOpMode {
             telemetried();
 
             telemetry.update();
-
-            if (robot.rightFruity.red() >= 150) {
-
-                robot.rightMotor.setPower(0);
-            }
-
-            if (robot.leftFruity.red() >= 300) {
-
-                robot.leftMotor.setPower(0);
-            }
         }
     }
 
@@ -158,10 +169,6 @@ public class Innov8_Tinkerbell_michaelCrater extends LinearOpMode {
 
     public void telemetried() {
         telemetry.addData("Case", taskNumber);
-        telemetry.addData("RightRed", robot.rightFruity.red());
-        telemetry.addData("RightBlue", robot.rightFruity.blue());
-        telemetry.addData("LeftRed", robot.leftFruity.red());
-        telemetry.addData("LeftBlue", robot.leftFruity.blue());
         telemetry.addData("right", robot.rightMotor.getCurrentPosition());
         telemetry.addData("left", robot.leftMotor.getCurrentPosition());
         telemetry.addData("startR", startPositionR);
@@ -187,10 +194,17 @@ public class Innov8_Tinkerbell_michaelCrater extends LinearOpMode {
         startPositionR = 0;
         telemetried();
 
+        gyro(); // initializes gyro
 
         //Drops robot from lander
         drop();
         taskNumber = 1;
+        telemetried();
+
+        turn(30, 30);
+        telemetried();
+
+        turn(30, -30);
         telemetried();
 
         //Moves robot forward in front of minerals

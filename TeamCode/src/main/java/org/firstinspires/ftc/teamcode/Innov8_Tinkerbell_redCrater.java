@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -32,6 +33,7 @@ public class Innov8_Tinkerbell_redCrater extends LinearOpMode {
     double crocPos = 0;
     double liftPos = 0;
     double liftEnd = 0;
+
 
     public void forward(double feet, int power) {
         startPositionL = robot.leftMotor.getCurrentPosition();
@@ -124,16 +126,6 @@ public class Innov8_Tinkerbell_redCrater extends LinearOpMode {
             telemetried();
 
             telemetry.update();
-
-            if (robot.rightFruity.red() >= 150) {
-
-                robot.rightMotor.setPower(0);
-            }
-
-            if (robot.leftFruity.red() >= 300) {
-
-                robot.leftMotor.setPower(0);
-            }
         }
     }
 
@@ -150,10 +142,6 @@ public class Innov8_Tinkerbell_redCrater extends LinearOpMode {
 
     public void telemetried() {
         telemetry.addData("Case", taskNumber);
-        telemetry.addData("RightRed", robot.rightFruity.red());
-        telemetry.addData("RightBlue", robot.rightFruity.blue());
-        telemetry.addData("LeftRed", robot.leftFruity.red());
-        telemetry.addData("LeftBlue", robot.leftFruity.blue());
         telemetry.addData("right", robot.rightMotor.getCurrentPosition());
         telemetry.addData("left", robot.leftMotor.getCurrentPosition());
         telemetry.addData("startR", startPositionR);

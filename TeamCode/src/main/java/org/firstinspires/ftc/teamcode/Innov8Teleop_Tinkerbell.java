@@ -128,142 +128,138 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             // send the info back to driver station using telemetry function.
             // if the digital channel returns true it's HIGH and the button is unpressed.
-
-
             // run until the end of the match (driver presses STOP)
-            while (opModeIsActive()) {
 
-                // Hook
-                while (gamepad1.right_bumper) {
-                    robot.hook.setPosition(robot.hook.getPosition() + 0.005);
+            // Hook
+            while (gamepad1.right_bumper) {
+                robot.hook.setPosition(robot.hook.getPosition() + 0.005);
+            }
+
+            while (gamepad1.left_bumper) {
+                robot.hook.setPosition(robot.hook.getPosition() - 0.005);
+            }
+
+            // Driving
+            if (gamepad1.left_stick_button) {
+                leftDirection = leftDirection * -1;
+            }
+
+            if (gamepad1.right_stick_button) {
+                rightDirection = rightDirection * -1;
+            }
+
+            // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
+            // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
+            left = gamepad1.left_stick_y;
+            right = gamepad1.right_stick_y;
+
+            // Normalize the values so neither exceed +/- 1.0
+            max = Math.max(Math.abs(left), Math.abs(right));
+            if (max > 1.0) {
+                left /= max;
+                right /= max;
+            }
+
+
+            lPower = left * leftDirection * correctL * reduceDriveSpeed;
+            rPower = right * rightDirection * correctR * reduceDriveSpeed;
+            robot.leftMotor.setPower(lPower);
+            robot.rightMotor.setPower(rPower);
+
+            if (robot.smee.getState() == false && gamepad2.left_stick_y > 0) {
+                liftPower = 0;
+                robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            } else {
+                liftPower = (gamepad2.left_stick_y);
+            }
+
+            robot.liftMotor.setPower(liftPower);
+            currentLift = robot.liftMotor.getCurrentPosition();
+
+
+            if (gamepad1.x) {
+                robot.croc.setPosition(1);
+            }
+
+            if (gamepad1.b) {
+                robot.croc.setPosition(0.5);
+            }
+
+
+            if (gamepad1.dpad_up) {
+                reduceDriveSpeed = 1;
+            }
+
+            if (gamepad1.dpad_down) {
+                reduceDriveSpeed = 0.4;
+            }
+
+            if (gamepad1.dpad_right) {
+                reduceDriveSpeed = 1.5;
+            }
+
+            if (gamepad1.dpad_left) {
+                reduceDriveSpeed = 0.75;
+            }
+            if (gamepad2.dpad_up) {
+                while (robot.liftMotor.getCurrentPosition() > endLift) {
+                    robot.liftMotor.setPower(-20);
                 }
+                robot.liftMotor.setPower(0);
+            }
 
-                while (gamepad1.left_bumper) {
-                    robot.hook.setPosition(robot.hook.getPosition() - 0.005);
-                }
-
-                // Driving
-                if (gamepad1.left_stick_button) {
-                    leftDirection = leftDirection * -1;
-                }
-
-                if (gamepad1.right_stick_button) {
-                    rightDirection = rightDirection * -1;
-                }
-
-                // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
-                // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
-                left = gamepad1.left_stick_y;
-                right = gamepad1.right_stick_y;
-
-                // Normalize the values so neither exceed +/- 1.0
-                max = Math.max(Math.abs(left), Math.abs(right));
-                if (max > 1.0) {
-                    left /= max;
-                    right /= max;
-                }
+            // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
+            // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
 
 
-                lPower = left * leftDirection * correctL * reduceDriveSpeed;
-                rPower = right * rightDirection * correctR * reduceDriveSpeed;
-                robot.leftMotor.setPower(lPower);
-                robot.rightMotor.setPower(rPower);
-
-                if (robot.smee.getState() == false && gamepad2.left_stick_y > 0) {
-                    liftPower = 0;
-                    robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                } else {
-                    liftPower = (gamepad2.left_stick_y);
-                }
-
-                robot.liftMotor.setPower(liftPower);
-                currentLift = robot.liftMotor.getCurrentPosition();
+            // Normalize the values so neither exceed +/- 1.0
+            max = Math.max(Math.abs(left2), Math.abs(right2));
+            if (max > 1.0) {
+                left2 /= max;
+                right2 /= max;
+            }
 
 
-                if (gamepad1.x) {
-                    robot.croc.setPosition(1);
-                }
+            if (gamepad1.y) {
+                rightDirection = rightDirection * -1;
+                leftDirection = leftDirection * -1;
+            }
 
-                if (gamepad1.b) {
-                    robot.croc.setPosition(0.5);
-                }
+            nanaFor = -gamepad2.right_stick_y;
 
+            // Normalize the values so neither exceed +/- 1.0
+            max = Math.max(Math.abs(left), Math.abs(right));
+            if (max > 1.0) {
+                nanaFor /= max;
+            }
 
-                if (gamepad1.dpad_up) {
-                    reduceDriveSpeed = 1;
-                }
+            robot.nana.setPower(nanaFor);
 
-                if (gamepad1.dpad_down) {
-                    reduceDriveSpeed = 0.4;
-                }
-
-                if (gamepad1.dpad_right) {
-                    reduceDriveSpeed = 1.5;
-                }
-
-                if (gamepad1.dpad_left) {
-                    reduceDriveSpeed = 0.75;
-                }
-                if (gamepad2.dpad_up) {
-                    while (robot.liftMotor.getCurrentPosition() > endLift) {
-                        robot.liftMotor.setPower(-20);
-                    }
-                    robot.liftMotor.setPower(0);
-                }
-
-                // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
-                // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
+            //michaelPos = robot.michael.getCurrentPosition();
 
 
-                // Normalize the values so neither exceed +/- 1.0
-                max = Math.max(Math.abs(left2), Math.abs(right2));
-                if (max > 1.0) {
-                    left2 /= max;
-                    right2 /= max;
-                }
+            //opens michael
+            if (gamepad2.left_trigger > 0.3) {
+                leftTrigger = gamepad2.left_trigger;
+                robot.michael.setPower(leftTrigger*2);
 
+            } else if (gamepad2.right_trigger > 0.3) {
+                rightTrigger = (gamepad2.right_trigger * -1);
+                robot.michael.setPower(rightTrigger*2);
+            } else {
+                rightTrigger = 0;
+                robot.michael.setPower(0);
+            }
 
-                if (gamepad1.y) {
-                    rightDirection = rightDirection * -1;
-                    leftDirection = leftDirection * -1;
-                }
+            //extends wendy; wendy is all powerful arm
 
-                nanaFor = -gamepad2.right_stick_y;
-
-                // Normalize the values so neither exceed +/- 1.0
-                max = Math.max(Math.abs(left), Math.abs(right));
-                if (max > 1.0) {
-                    nanaFor /= max;
-                }
-
-                robot.nana.setPower(nanaFor);
-
-                //michaelPos = robot.michael.getCurrentPosition();
-
-
-                //opens michael
-                if (gamepad2.left_trigger > 0.3) {
-                    leftTrigger = gamepad2.left_trigger;
-                    robot.michael.setPower(leftTrigger);
-
-                } else if (gamepad2.right_trigger > 0.3) {
-                    rightTrigger = (gamepad2.right_trigger * -1);
-                    robot.michael.setPower(rightTrigger);
-                } else {
-                    rightTrigger = 0;
-                    robot.michael.setPower(0);
-                }
-
-                //extends wendy; wendy is all powerful arm
-
-                if (gamepad2.dpad_right) {
-                    robot.wendy.setPower(0.3);
-                } else if (gamepad2.dpad_left) {
-                    robot.wendy.setPower(-0.3);
-                } else {
-                    robot.wendy.setPower(0);
-                }
+            if (gamepad2.dpad_right) {
+                robot.wendy.setPower(0.3);
+            } else if (gamepad2.dpad_left) {
+                robot.wendy.setPower(-0.3);
+            } else {
+                robot.wendy.setPower(0);
             }
 
 
