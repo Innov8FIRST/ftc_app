@@ -27,6 +27,7 @@ public class HardwareInnov8Tinkerbell {
     public DcMotor rightMotor = null;
     public DcMotor liftMotor = null;    // used to raise and ower the lift
     public DcMotor michael = null;
+    public DcMotor wendy = null;
 
     //public DcMotor rightChain = null;
 
@@ -72,6 +73,8 @@ public class HardwareInnov8Tinkerbell {
         //rightChain.setDirection(DcMotor.Direction.FORWARD);
         michael = hwMap.dcMotor.get("michael");
         michael.setDirection(DcMotor.Direction.FORWARD);
+        wendy = hwMap.dcMotor.get("wendy");
+        wendy.setDirection(DcMotor.Direction.FORWARD);
 
         smee = hwMap.get(DigitalChannel.class, "smee"); // get a reference to our digitalTouch object.
         smee.setMode(DigitalChannel.Mode.INPUT); // set the digital channel to input.
@@ -81,6 +84,7 @@ public class HardwareInnov8Tinkerbell {
         rightMotor.setPower(0);
         liftMotor.setPower(0);
         michael.setPower(0);
+        wendy.setPower(0);
         //rightChain.setPower(0);
 
         // Set all motors to run without encoders.
@@ -91,6 +95,7 @@ public class HardwareInnov8Tinkerbell {
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //  rightChain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         michael.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        wendy.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Define and initialize ALL installed servos.
         hook = hwMap.servo.get("hook");

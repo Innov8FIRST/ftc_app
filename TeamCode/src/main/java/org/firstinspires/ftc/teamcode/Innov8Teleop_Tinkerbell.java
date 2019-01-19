@@ -101,6 +101,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         double michaelPos = 0;
         double leftTrigger = 0;
         double rightTrigger = 0;
+        double wendyPower = 0;
 
 
         robot.init(hardwareMap);
@@ -114,6 +115,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         telemetry.addData("currentLift", currentLift);
         telemetry.addData("Say", "Hello Driver");
         telemetry.addData("michaelPower", robot.michael.getCurrentPosition());
+        telemetry.addData("wendyPower", robot.wendy.getCurrentPosition());
         telemetry.update();
 
 
@@ -126,7 +128,6 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             // send the info back to driver station using telemetry function.
             // if the digital channel returns true it's HIGH and the button is unpressed.
-
 
 
             // run until the end of the match (driver presses STOP)
@@ -168,18 +169,16 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 robot.leftMotor.setPower(lPower);
                 robot.rightMotor.setPower(rPower);
 
-                if (robot.smee.getState()==false && gamepad2.left_stick_y > 0) {
+                if (robot.smee.getState() == false && gamepad2.left_stick_y > 0) {
                     liftPower = 0;
                     robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                }
-
-                else {
+                    robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                } else {
                     liftPower = (gamepad2.left_stick_y);
                 }
 
                 robot.liftMotor.setPower(liftPower);
                 currentLift = robot.liftMotor.getCurrentPosition();
-
 
 
                 if (gamepad1.x) {
@@ -256,49 +255,60 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                     robot.michael.setPower(0);
                 }
 
-                while (gamepad2.x) {
-                    robot.hook.setPosition(robot.hook.getPosition() + 0.005);
-                }
+                //extends wendy; wendy is all powerful arm
 
-                while (gamepad2.b) {
-                    robot.hook.setPosition(robot.hook.getPosition() - 0.005);
-                }
-
-                // Send telemetry message to signify robot running;
-                telemetry.addData("lift", "%.2f", left);
-                telemetry.addData("turn", "%.2f", right);
-                telemetry.addData("michaelPower", robot.michael.getCurrentPosition());
-                telemetry.addData("LDir: ", leftDirection);
-                telemetry.addData("RDir: ", rightDirection);
-                telemetry.addData("rPower: ", rPower);
-                telemetry.addData("lPower: ", lPower);
-                telemetry.addData("reduceDriveSpeed: ", reduceDriveSpeed);
-                telemetry.addData("rightM: ", robot.rightMotor.getPower());
-                telemetry.addData("leftM: ", robot.leftMotor.getPower());
-                telemetry.addData("left", left);
-                telemetry.addData("right", right);
-                telemetry.addData("Lift: ", robot.liftMotor.getCurrentPosition());
-                telemetry.addData("LiftSpeed: ", robot.liftMotor.getPower());
-                telemetry.addData("right2: ", right2);
-                telemetry.addData("left2: ", left2);
-                telemetry.addData("righten", robot.rightMotor.getCurrentPosition());
-                telemetry.addData("leften", robot.leftMotor.getCurrentPosition());
-                telemetry.addData("startLift", startLift);
-                telemetry.addData("currentLift", currentLift);
-                telemetry.addData("endLift", endLift);
-                telemetry.addData("liftPower", liftPower);
-                telemetry.addData("leftTrigger", leftTrigger);
-                telemetry.addData("rightTrigger", rightTrigger);
-                if (robot.smee.getState() == true) {
-                    telemetry.addData("smee", "Is Not Pressed");
+                if (gamepad2.dpad_right) {
+                    robot.wendy.setPower(0.3);
+                } else if (gamepad2.dpad_left) {
+                    robot.wendy.setPower(-0.3);
                 } else {
-                    telemetry.addData("smee", "Is Pressed");
+                    robot.wendy.setPower(0);
                 }
-                telemetry.update();
-
-                // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
-                robot.waitForTick(40);
             }
+
+
+            while (gamepad2.x) {
+                robot.hook.setPosition(robot.hook.getPosition() + 0.005);
+            }
+
+            while (gamepad2.b) {
+                robot.hook.setPosition(robot.hook.getPosition() - 0.005);
+            }
+
+            // Send telemetry message to signify robot running;
+            telemetry.addData("lift", "%.2f", left);
+            telemetry.addData("turn", "%.2f", right);
+            telemetry.addData("michaelPower", robot.michael.getCurrentPosition());
+            telemetry.addData("LDir: ", leftDirection);
+            telemetry.addData("RDir: ", rightDirection);
+            telemetry.addData("rPower: ", rPower);
+            telemetry.addData("lPower: ", lPower);
+            telemetry.addData("reduceDriveSpeed: ", reduceDriveSpeed);
+            telemetry.addData("rightM: ", robot.rightMotor.getPower());
+            telemetry.addData("leftM: ", robot.leftMotor.getPower());
+            telemetry.addData("left", left);
+            telemetry.addData("right", right);
+            telemetry.addData("Lift: ", robot.liftMotor.getCurrentPosition());
+            telemetry.addData("LiftSpeed: ", robot.liftMotor.getPower());
+            telemetry.addData("right2: ", right2);
+            telemetry.addData("left2: ", left2);
+            telemetry.addData("righten", robot.rightMotor.getCurrentPosition());
+            telemetry.addData("leften", robot.leftMotor.getCurrentPosition());
+            telemetry.addData("startLift", startLift);
+            telemetry.addData("currentLift", currentLift);
+            telemetry.addData("endLift", endLift);
+            telemetry.addData("liftPower", liftPower);
+            telemetry.addData("leftTrigger", leftTrigger);
+            telemetry.addData("rightTrigger", rightTrigger);
+            if (robot.smee.getState() == true) {
+                telemetry.addData("smee", "Is Not Pressed");
+            } else {
+                telemetry.addData("smee", "Is Pressed");
+            }
+            telemetry.update();
+
+            // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
+            robot.waitForTick(40);
         }
     }
 }
