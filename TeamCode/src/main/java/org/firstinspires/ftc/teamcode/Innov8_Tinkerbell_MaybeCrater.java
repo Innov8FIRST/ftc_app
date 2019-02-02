@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -12,9 +11,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "Innov8_Tinkerbell_Depot", group = "Auto")
+@Autonomous(name = "Innov8_Tinkerbell_CraterMaybe", group = "Auto")
 
-public class Innov8_Tinkerbell_Depot extends LinearOpMode {
+public class Innov8_Tinkerbell_MaybeCrater extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite"; //Establish name for minerals
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
@@ -57,8 +56,8 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
 
     public void forward(double feet, double power) {
         startPositionL = robot.leftMotor.getCurrentPosition();
-        //  double encoder = feet * FEET_TO_ENCODER;
-        endPositionL = startPositionL + feet * 200;
+      //  double encoder = feet * FEET_TO_ENCODER;
+        endPositionL = startPositionL + feet*200;
 
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition() <= endPositionL) {
             telemetried();
@@ -73,8 +72,8 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
 
     public void backward(double feet, double power) {
         startPositionR = robot.rightMotor.getCurrentPosition();
-        //  double encoder = -feet * FEET_TO_ENCODER;
-        endPositionR = startPositionR - feet * 200;
+      //  double encoder = -feet * FEET_TO_ENCODER;
+        endPositionR = startPositionR - feet*200;
 
         while (opModeIsActive() && robot.rightMotor.getCurrentPosition() >= endPositionR) {
             telemetried();
@@ -89,17 +88,19 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
 
     public void turn(double power, int degree) {
         startPositionR = robot.rightMotor.getCurrentPosition();
-        double encoder = degree * 50;
+        double degreeinput = 50 / degree;
+        double encoder = degreeinput;
         endPositionR = startPositionR + encoder;
+        endPositionL = startPositionL + encoder;
 
         while (opModeIsActive() && robot.rightMotor.getCurrentPosition() >= endPositionR) {
             telemetried();
             if (degree < 0) {
-                robot.rightMotor.setPower(power * multR * correctR);
-                robot.leftMotor.setPower(-1 * power * multR * correctR);
+                robot.rightMotor.setPower(power * degreeinput * multR * correctR);
+                robot.leftMotor.setPower(power * degree * multR * correctR);
             } else {
-                robot.rightMotor.setPower(-1 * power * multR * correctR);
-                robot.leftMotor.setPower(power * multR * correctR);
+                robot.rightMotor.setPower(power * degree * multR * correctR);
+                robot.leftMotor.setPower(power * degreeinput * multR * correctR);
             }
             robot.rightMotor.setPower(0);
             robot.leftMotor.setPower(0);
@@ -113,7 +114,7 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
             robot.liftMotor.setPower(-1);
         }
         robot.liftMotor.setPower(0);
-        robot.hook.setPosition(0.75);
+        robot.hook.setPosition(0.8);
     }
 
     public void release() {
@@ -129,14 +130,11 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
 
     public void centeredOnBlock() {
         if (degreeten <= -0.1) { //This uses the TensorFlow degree returned from the phone
-            robot.rightMotor.setPower(0.2 * degreeten);
-            robot.leftMotor.setPower(-0.2 * degreeten);
+            robot.rightMotor.setPower(1 * degreeten);
+            robot.leftMotor.setPower(-1 * degreeten);
         } else if (degreeten >= 0.1) {
-            robot.rightMotor.setPower(-0.2 * degreeten);
-            robot.leftMotor.setPower(0.2 * degreeten);
-        } else {
-            robot.rightMotor.setPower(0);
-            robot.leftMotor.setPower(0);
+            robot.rightMotor.setPower(-1 * degreeten);
+            robot.leftMotor.setPower(1 * degreeten);
         }
     }
 
@@ -158,6 +156,14 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
             }
         }
         return 0;
+    }
+
+    public void michaelDrop() {
+        time = 0;
+        while (opModeIsActive() && robot.michael.getCurrentPosition() < 70) {
+            robot.michael.setPower(0.5);
+        }
+        robot.michael.setPower(0);
     }
 
     private void initVuforia() {
@@ -232,6 +238,8 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         robot.init(hardwareMap);                                // Servo mid position
+     //   initVuforia();
+      //  initTfod();
         telemetried();
 
         waitForStart();
@@ -245,15 +253,20 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         taskNumber = 1;
         telemetried();
 
-        initVuforia();
-        initTfod();
+        taskNumber = 2;
+        forward(13, 40);
+        telemetried();
+
+        taskNumber = 10;
+        michaelDrop();
+        telemetried();
 
         //Decide which mineral to knock
         taskNumber = 4;
-        confi = idenMineral();
+      //  confi = idenMineral();
         telemetried();
 
-        if (confi <= 0.9) {
+    /*    if (confi <= 0.9) {
             turn(30, -30);
             mineralposition = mineralposition + 1;
             confi = idenMineral();
@@ -262,25 +275,21 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
                 mineralposition = mineralposition + 1;
                 confi = idenMineral();
             }
-        }
+        } */
         //Move robot to knock mineral
-        knockMineral();
-        taskNumber = 4;
-        telemetried();
+    //    knockMineral();
+    //    taskNumber = 4;
+    //    telemetried();
 
         //After mineral has been knocked, moves backward to prepare for turn
-        backward(4, 40);
-        taskNumber = 5;
-        telemetried();
+     //   backward(4, 40);
+    //    taskNumber = 5;
+     //   telemetried();
 
         //Move forward the last time towards safe zone
-        forward(8, 20);
-        taskNumber = 9;
-        telemetried();
-
-        taskNumber = 10;
-        crocDrop();
-        telemetried();
+        //forward(8, 20);
+        //taskNumber = 9;
+        //telemetried();
 
         //Drops totem
         //Wait for totem to drop

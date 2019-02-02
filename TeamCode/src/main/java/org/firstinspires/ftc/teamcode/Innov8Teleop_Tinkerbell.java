@@ -86,8 +86,8 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         double liftPower = 0;
         double reduceSpeedArm = 0.5;
         double reduceDriveSpeed = 1;
-        double rightDirection = 1;
-        double leftDirection = 1;
+        double rightDirection = -1;
+        double leftDirection = -1;
         double rPower = 0;
         double lPower = 0;
         double correctR = 0.9;
@@ -102,6 +102,9 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         double leftTrigger = 0;
         double rightTrigger = 0;
         double wendyPower = 0;
+        double startWendy = 0;
+        double currentWendy = 0;
+        double endWendy = 0;
 
 
         robot.init(hardwareMap);
@@ -202,12 +205,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             if (gamepad1.dpad_left) {
                 reduceDriveSpeed = 0.75;
             }
-            if (gamepad2.dpad_up) {
-                while (robot.liftMotor.getCurrentPosition() > endLift) {
-                    robot.liftMotor.setPower(-20);
-                }
-                robot.liftMotor.setPower(0);
-            }
+
 
             // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
             // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
@@ -241,12 +239,25 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             //opens michael
             if (gamepad2.left_trigger > 0.3) {
+                robot.hook.setPosition(1);
+                    if (currentWendy > -100) {
+                        endWendy = -100 - currentWendy;
+                        while (robot.wendy.getCurrentPosition() > endWendy && opModeIsActive());
+                        robot.wendy.setPower(wendyPower);
+                    }
                 leftTrigger = gamepad2.left_trigger;
                 robot.michael.setPower(leftTrigger*2);
 
             } else if (gamepad2.right_trigger > 0.3) {
+                robot.hook.setPosition(1);
+                if (currentWendy > -100) {
+                    endWendy = -100 - currentWendy;
+                    while (robot.wendy.getCurrentPosition() > endWendy && opModeIsActive());
+                    robot.wendy.setPower(wendyPower);
+                }
                 rightTrigger = (gamepad2.right_trigger * -1);
                 robot.michael.setPower(rightTrigger*2);
+
             } else {
                 rightTrigger = 0;
                 robot.michael.setPower(0);
@@ -256,7 +267,9 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
 
             if (gamepad2.dpad_right) {
                 robot.wendy.setPower(0.3);
+                currentWendy = robot.wendy.getCurrentPosition();
             } else if (gamepad2.dpad_left) {
+                currentWendy = robot.wendy.getCurrentPosition();
                 robot.wendy.setPower(-0.3);
             } else {
                 robot.wendy.setPower(0);
@@ -302,6 +315,10 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 telemetry.addData("smee", "Is Pressed");
             }
             telemetry.update();
+            telemetry.addData("startWendy", startWendy);
+            telemetry.addData("currentWendy", currentWendy);
+            telemetry.addData("endWendy", endWendy);
+            telemetry.addData("wendyPower", wendyPower);
 
             // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
             robot.waitForTick(40);

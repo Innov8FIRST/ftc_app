@@ -140,7 +140,7 @@ public class Innov8_Tinkerbell_michaelCrater extends LinearOpMode {
     public void michaelDrop() {
         time = 0;
         while (opModeIsActive() && robot.michael.getCurrentPosition() < 70) {
-            robot.michael.setPower(0.3);
+            robot.michael.setPower(0.5);
         }
         robot.michael.setPower(0);
     }
@@ -194,21 +194,21 @@ public class Innov8_Tinkerbell_michaelCrater extends LinearOpMode {
         startPositionR = 0;
         telemetried();
 
-        gyro(); // initializes gyro
+       // gyro(); // initializes gyro
 
         //Drops robot from lander
         drop();
         taskNumber = 1;
         telemetried();
 
-        turn(30, 30);
-        telemetried();
+    //    turn(30, 30);
+    //    telemetried();
 
-        turn(30, -30);
-        telemetried();
+     //   turn(30, -30);
+    //    telemetried();
 
         //Moves robot forward in front of minerals
-        forward(3, 40);
+        forward(5, 40);
         taskNumber = 2;
         telemetried();
 

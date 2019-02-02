@@ -78,10 +78,10 @@ public class Innov8_Tinkerbell_redCrater extends LinearOpMode {
             telemetried();
             if (degree < 0) {
                 robot.rightMotor.setPower(power * degreeinput * multR * correctR);
-                robot.leftMotor.setPower(power * degree * multR * correctR);
+                robot.leftMotor.setPower(-power * degree * multL * correctL);
             } else {
-                robot.rightMotor.setPower(power * degree * multR * correctR);
-                robot.leftMotor.setPower(power * degreeinput * multR * correctR);
+                robot.rightMotor.setPower(-power * degree * multR * correctR);
+                robot.leftMotor.setPower(power * degreeinput * multL * correctL);
             }
             robot.rightMotor.setPower(0);
             robot.leftMotor.setPower(0);
