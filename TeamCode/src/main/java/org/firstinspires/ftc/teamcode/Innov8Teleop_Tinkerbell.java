@@ -101,7 +101,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         double michaelPos = 0;
         double leftTrigger = 0;
         double rightTrigger = 0;
-        double wendyPower = 0;
+        double wendyPower = 1;
         double startWendy = 0;
         double currentWendy = 0;
         double endWendy = 0;
@@ -242,8 +242,9 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 robot.hook.setPosition(1);
                     if (currentWendy > -100) {
                         endWendy = -100 - currentWendy;
-                        while (robot.wendy.getCurrentPosition() > endWendy && opModeIsActive());
-                        robot.wendy.setPower(wendyPower);
+                        while (robot.wendy.getCurrentPosition() > endWendy && opModeIsActive()) {
+                            robot.wendy.setPower(-0.3);
+                        }
                     }
                 leftTrigger = gamepad2.left_trigger;
                 robot.michael.setPower(leftTrigger*2);
@@ -252,8 +253,9 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 robot.hook.setPosition(1);
                 if (currentWendy > -100) {
                     endWendy = -100 - currentWendy;
-                    while (robot.wendy.getCurrentPosition() > endWendy && opModeIsActive());
-                    robot.wendy.setPower(wendyPower);
+                    while (robot.wendy.getCurrentPosition() > endWendy && opModeIsActive()) {
+                        robot.wendy.setPower(-0.3);
+                    }
                 }
                 rightTrigger = (gamepad2.right_trigger * -1);
                 robot.michael.setPower(rightTrigger*2);

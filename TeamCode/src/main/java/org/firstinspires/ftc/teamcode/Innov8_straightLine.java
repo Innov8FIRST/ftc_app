@@ -68,11 +68,11 @@ public class Innov8_straightLine extends LinearOpMode {
                     robot.leftMotor.setPower(0);
 
                     taskNumber = 1;
-                    break;
+                    break; // 12.5 inches to 360
 
             case 1: // Drive forwards in a straight line - 2ft 7 in
 
-                endPositionR = startPositionR - (5000 * multR);
+                endPositionR = startPositionR - (100 * multR);
 
                 while (opModeIsActive() && robot.rightMotor.getCurrentPosition() >= endPositionR) {
                     robot.rightMotor.setPower(50 * multR * correctR);

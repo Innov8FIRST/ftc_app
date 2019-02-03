@@ -1,10 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -21,7 +26,7 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
     private static final String VUFORIA_KEY = "ATVwosb/////AAAAGYlO5qoc6kZagqZX6jvBKGgVjiVqbwuCKCZeIQTBkfNwsuJY/+oa3DHJbR/aFFfPF2A/bsi9cY36hUzYuOhFVBmWjYzVbQEh3YPoVATeaQEr/P6hNDA2AbW1Xbq0+hxqiYKpA1vNu22pVPOMW7MDmDst4HiuDLEXATZC3boSoLU6d9up0qPxZbZ+3fjXMnMTr6QkXIle3O7dfg/FVM09i/CIsq/Harcgg6lCoOYnrw70TEmPXOAxYdMh6Dh2KxZ8uAfHLur0U2adA0mWUKS7+z8Axq6jlH5oY8LOXp0FqX6A820mkqeDZz5DCkupkLOuTw/taIqz4vf2ewHRB8xGt7hEu34ZOr1TWOpT0bVnLLhB";
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod; //Calls the Tensor Flow Object Detection
-    private static final double FEET_TO_ENCODER = 180;
+    private static final double FEET_TO_ENCODER = 343.7848;
 
     /* Declare OpMode members. */
     HardwareInnov8Tinkerbell robot = new HardwareInnov8Tinkerbell();   // Use Tinkerbell's hardware
@@ -37,7 +42,7 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
     int Time = 0; //Used to count time
     int taskNumber = 0;   //used to determine the step that should be executed
     double multR = 0.03; //Speed multiplier for the right motor
-    double multL = 0.02; //Speed multiplier for the left motor
+    double multL = 0.03; //Speed multiplier for the left motor
     double correctL = -1;  // 1 or -1
     double correctR = -1;  //1 or -1
     double right = 0;
@@ -54,11 +59,12 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
     double degreeten = 0; //This is the TensorFlow degree returned from the phone
     int mineralposition = 1;
 
+    BNO055IMU imu;
+
 
     public void forward(double feet, double power) {
         startPositionL = robot.leftMotor.getCurrentPosition();
-        //  double encoder = feet * FEET_TO_ENCODER;
-        endPositionL = startPositionL + feet * 200;
+        endPositionL = startPositionL + feet * FEET_TO_ENCODER;
 
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition() <= endPositionL) {
             telemetried();
@@ -73,13 +79,12 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
 
     public void backward(double feet, double power) {
         startPositionR = robot.rightMotor.getCurrentPosition();
-        //  double encoder = -feet * FEET_TO_ENCODER;
-        endPositionR = startPositionR - feet * 200;
+        endPositionR = startPositionR - feet * FEET_TO_ENCODER;
 
         while (opModeIsActive() && robot.rightMotor.getCurrentPosition() >= endPositionR) {
             telemetried();
-            robot.rightMotor.setPower(-power * multR * correctR);
-            robot.leftMotor.setPower(-power * multR * correctR);
+            robot.rightMotor.setPower(power * multR * correctR);
+            robot.leftMotor.setPower(power * multR * correctR);
             telemetry.addData("taskNumber", taskNumber);
             telemetry.update();
         }
@@ -87,24 +92,45 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         robot.leftMotor.setPower(0);
     }
 
-    public void turn(double power, int degree) {
-        startPositionR = robot.rightMotor.getCurrentPosition();
-        double encoder = degree * 50;
-        endPositionR = startPositionR + encoder;
+    public void initGyro() {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
-        while (opModeIsActive() && robot.rightMotor.getCurrentPosition() >= endPositionR) {
-            telemetried();
-            if (degree < 0) {
-                robot.rightMotor.setPower(power * multR * correctR);
-                robot.leftMotor.setPower(-1 * power * multR * correctR);
-            } else {
-                robot.rightMotor.setPower(-1 * power * multR * correctR);
-                robot.leftMotor.setPower(power * multR * correctR);
-            }
-            robot.rightMotor.setPower(0);
-            robot.leftMotor.setPower(0);
-        }
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
     }
+
+
+    public void turn(double power, int degree) { //right is negative
+        initGyro();
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        int direction = degree / Math.abs(degree);
+        double endAng = degree + angles.firstAngle;
+        double previousAng = angles.firstAngle;
+
+        while (opModeIsActive() && Math.abs(angles.firstAngle - endAng) > 1) {
+            robot.rightMotor.setPower(0.3 * direction);
+            robot.leftMotor.setPower(0.3 * direction * -1);
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+            telemetry.addData("previousAng", previousAng);
+            telemetry.addData("first", angles.firstAngle);
+            telemetry.addData("endAng", endAng);
+            telemetry.update();
+        }
+        robot.rightMotor.setPower(0);
+        robot.leftMotor.setPower(0);
+    }
+
 
     public void drop() {
         liftPos = robot.liftMotor.getCurrentPosition();
@@ -241,59 +267,60 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         telemetried();
 
         //Drops robot from lander
-        drop();
-        taskNumber = 1;
+        //  drop();
+        // taskNumber = 1;
         telemetried();
 
         initVuforia();
         initTfod();
-
+        initGyro();
         //Decide which mineral to knock
-        taskNumber = 4;
-        confi = idenMineral();
+        taskNumber = 2;
         telemetried();
+        confi = idenMineral();
+        for (int i = 0; i < 400; i++) {
+            confi = idenMineral();
+            telemetried();
+        }
 
         if (confi <= 0.9) {
-            turn(30, -30);
+            forward(0.3, 10);
+            turn(10, -30);
             mineralposition = mineralposition + 1;
             confi = idenMineral();
+            taskNumber = 3;
             if (confi <= 0.9) {
-                turn(30, 60);
+                turn(10, 60);
                 mineralposition = mineralposition + 1;
                 confi = idenMineral();
+                taskNumber = 4;
             }
         }
         //Move robot to knock mineral
-        knockMineral();
-        taskNumber = 4;
-        telemetried();
-
-        //After mineral has been knocked, moves backward to prepare for turn
-        backward(4, 40);
         taskNumber = 5;
         telemetried();
+        forward(5, 10);
 
         //Move forward the last time towards safe zone
-        forward(8, 20);
-        taskNumber = 9;
+        taskNumber = 7;
         telemetried();
+        forward(2, 10);
 
-        taskNumber = 10;
-        crocDrop();
+        taskNumber = 8;
         telemetried();
+        crocDrop();
 
         //Drops totem
         //Wait for totem to drop
-        wait(1000);
-        taskNumber = 11;
+        taskNumber = 9;
         telemetried();
+        wait(1000);
 
         //Move backwards out of safe zone
-        backward(3, 30);
-        taskNumber = 12;
+        taskNumber = 10;
         telemetried();
+        backward(2, 30);
         taskNumber = 9999;
         telemetried();
-        telemetry.update();
     }
 }
