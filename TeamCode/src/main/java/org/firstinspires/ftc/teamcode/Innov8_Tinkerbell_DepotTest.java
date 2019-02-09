@@ -17,9 +17,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "Innov8_Tinkerbell_Depot", group = "Auto")
+@Autonomous(name = "Innov8_Tinkerbell_DepotTest", group = "Auto")
 
-public class Innov8_Tinkerbell_Depot extends LinearOpMode {
+public class Innov8_Tinkerbell_DepotTest extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite"; //Establish name for minerals
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
@@ -50,7 +50,7 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
     double crocPos = 0;
     double liftPos = 0;
     double liftEnd = 0;
-    double confi = 0;
+    double confi = 0.11;
     double width = 0;
     double degree = 0;
     double goldMineralX = 0;
@@ -190,6 +190,7 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         return confi;
     }
 
+
     private void initVuforia() {
         // Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
@@ -269,81 +270,19 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         startPositionL = 0;
         startPositionR = 0;
         telemetried();
-
-        //Drops robot from lander
-        //  drop();
-        // taskNumber = 1;
-        telemetried();
-
         initVuforia();
         initTfod();
         initGyro();
-        //Decide which mineral to knock
-        taskNumber = 2;
+
         telemetried();
         confi = idenMineral();
-        wait(1000);
-        for (int i = 0; i < 400; i++) {
+        for (int i = 0; i < 20000000; i++) {
             confi = idenMineral();
-            telemetried();
+            telemetry.addData("confi", confi);
+            telemetry.addData("tfod", tfod);
+            telemetry.addData("i", i);
+            telemetry.update();
         }
-
-        if (confi <= 0.9) {
-            forward(0.3, 10);
-            turn(10, -30);
-            mineralposition = 2;
-            confi = idenMineral();
-            taskNumber = 3;
-            for (int i = 0; i < 200; i++) {
-                confi = idenMineral();
-                telemetried();
-            }
-            if (confi <= 0.9) {
-                turn(10, 64);
-                mineralposition = 3;
-                confi = idenMineral();
-                taskNumber = 4;
-            }
-        }
-        //Move robot to knock mineral
-        taskNumber = 5;
-        telemetried();
-        forward(6, 10);
-
-
-        if (mineralposition == 1) {
-            forward(2, 30);
-            crocDrop();
-            wait(1000);
-            turn(30, 90);
-            forward(0.2, 20);
-            turn(30, 45);
-            forward(5, 30);
-        }
-
-        if (mineralposition == 2) {
-            turn(20, 60);
-            forward(4, 20);
-            crocDrop();
-            wait(1000);
-            turn(20, 90);
-            forward(0.5, 20);
-            turn(20, 30);
-            forward(5, 30);
-        }
-
-        if (mineralposition == 3) {
-            turn(20, -60);
-            forward(4, 20);
-            crocDrop();
-            wait(1000);
-            turn(20, 90);
-            forward(0.5, 20);
-            turn(20, 90);
-            forward(5, 30);
-
-        }
-
         taskNumber = 9999;
 
     }
