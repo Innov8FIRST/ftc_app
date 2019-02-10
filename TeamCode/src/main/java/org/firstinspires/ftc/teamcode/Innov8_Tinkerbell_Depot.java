@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -26,7 +28,7 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
     private static final String VUFORIA_KEY = "ATVwosb/////AAAAGYlO5qoc6kZagqZX6jvBKGgVjiVqbwuCKCZeIQTBkfNwsuJY/+oa3DHJbR/aFFfPF2A/bsi9cY36hUzYuOhFVBmWjYzVbQEh3YPoVATeaQEr/P6hNDA2AbW1Xbq0+hxqiYKpA1vNu22pVPOMW7MDmDst4HiuDLEXATZC3boSoLU6d9up0qPxZbZ+3fjXMnMTr6QkXIle3O7dfg/FVM09i/CIsq/Harcgg6lCoOYnrw70TEmPXOAxYdMh6Dh2KxZ8uAfHLur0U2adA0mWUKS7+z8Axq6jlH5oY8LOXp0FqX6A820mkqeDZz5DCkupkLOuTw/taIqz4vf2ewHRB8xGt7hEu34ZOr1TWOpT0bVnLLhB";
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod; //Calls the Tensor Flow Object Detection
-    private static final double FEET_TO_ENCODER = 343.7848;
+    private static final double FEET_TO_ENCODER = (1120*12)/(4*Math.PI);
 
     /* Declare OpMode members. */
     HardwareInnov8Tinkerbell robot = new HardwareInnov8Tinkerbell();   // Use Tinkerbell's hardware
@@ -117,7 +119,7 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         double endAng = degree + angles.firstAngle;
         double previousAng = angles.firstAngle;
 
-        while (opModeIsActive() && Math.abs(angles.firstAngle - endAng) > 1) {
+        while (opModeIsActive() && Math.abs(angles.firstAngle - endAng) > 1.5) {
             robot.rightMotor.setPower(0.3 * direction);
             robot.leftMotor.setPower(0.3 * direction * -1);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -168,10 +170,12 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
     }
 
     public double idenMineral() {
+        double maxConfi = 0;
         if (tfod != null) {
             // getUpdatedRecognitions() will return null if no new information is available since
             // the last time that call was made.
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            Log.d("Recognitions", updatedRecognitions.toString());
             if (updatedRecognitions != null) {
                 telemetry.addData("# Object Detected", updatedRecognitions.size());
                 goldMineralX = -1;
@@ -179,7 +183,9 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
                     if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
                         goldMineralX = (int) recognition.getLeft();
                         confi = recognition.getConfidence();
-                        return confi;
+                        if (confi > maxConfi) {
+                            maxConfi = confi;
+                        }
                     }
                     else {
                         confi = 0.22;
@@ -187,7 +193,7 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
                 }
             }
         }
-        return confi;
+        return maxConfi;
     }
 
     private void initVuforia() {
@@ -230,10 +236,6 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         crocPos = robot.croc.getPosition();
         telemetry.addData("croc", crocPos);
         telemetry.update();
-        time = 0;
-        while (opModeIsActive() && time < 5000) {
-            time = time + 1;
-        }
     }
 
     public void telemetried() {
@@ -257,6 +259,25 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         telemetry.addData("position", mineralposition);
         telemetry.addData("croc", crocPos);
         telemetry.update();
+        Log.d("Case", Double.toString(taskNumber));
+        Log.d("right", Double.toString(robot.rightMotor.getCurrentPosition()));
+        Log.d("left", Double.toString(robot.leftMotor.getCurrentPosition()));
+        Log.d("startR", Double.toString(startPositionR));
+        Log.d("endR", Double.toString(endPositionR));
+        Log.d("startL", Double.toString(startPositionL));
+        Log.d("endL", Double.toString(endPositionL));
+        Log.d("RightPower", Double.toString(robot.rightMotor.getPower()));
+        Log.d("LeftPower", Double.toString(robot.rightMotor.getPower()));
+        Log.d("right", Double.toString(right));
+        Log.d("degree", Double.toString(degree));
+        Log.d("time", Double.toString(time));
+        Log.d("degreeten", Double.toString(degreeten));
+        Log.d("confi", Double.toString(confi));
+        Log.d("right", Double.toString(right));
+        Log.d("width", Double.toString(width));
+        Log.d("left", Double.toString(goldMineralX));
+        Log.d("position", Double.toString(mineralposition));
+        Log.d("croc", Double.toString(crocPos));
     }
 
     public void runOpMode() throws InterruptedException {
@@ -271,8 +292,8 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         telemetried();
 
         //Drops robot from lander
-        //  drop();
-        // taskNumber = 1;
+        // drop();
+        taskNumber = 1;
         telemetried();
 
         initVuforia();
@@ -282,22 +303,18 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         taskNumber = 2;
         telemetried();
         confi = idenMineral();
-        wait(1000);
-        for (int i = 0; i < 400; i++) {
-            confi = idenMineral();
-            telemetried();
-        }
+        telemetried();
 
-        if (confi <= 0.9) {
+
+        if (confi <= 0.8) {
             forward(0.3, 10);
             turn(10, -30);
             mineralposition = 2;
+            telemetried();
             confi = idenMineral();
             taskNumber = 3;
-            for (int i = 0; i < 200; i++) {
-                confi = idenMineral();
-                telemetried();
-            }
+            telemetried();
+
             if (confi <= 0.9) {
                 turn(10, 64);
                 mineralposition = 3;
@@ -308,24 +325,26 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         //Move robot to knock mineral
         taskNumber = 5;
         telemetried();
-        forward(6, 10);
+        forward(2, 20);
+
+        taskNumber = 9999;
+
 
 
         if (mineralposition == 1) {
-            forward(2, 30);
+            forward(32/12.0, 20);
             crocDrop();
-            wait(1000);
-            turn(30, 90);
-            forward(0.2, 20);
-            turn(30, 45);
-            forward(5, 30);
+            backward(13.5/12.0, 10);
+            turn(30, 40);
+            forward(9/12.0, 20);
+            turn(30, 80);
+            forward(69/12.0, 30);
         }
 
         if (mineralposition == 2) {
             turn(20, 60);
             forward(4, 20);
             crocDrop();
-            wait(1000);
             turn(20, 90);
             forward(0.5, 20);
             turn(20, 30);
@@ -333,18 +352,16 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         }
 
         if (mineralposition == 3) {
-            turn(20, -60);
-            forward(4, 20);
+            forward(.5, 30);
+            turn(20, -65);
+            forward(27/12.0, 20);
             crocDrop();
-            wait(1000);
-            turn(20, 90);
-            forward(0.5, 20);
-            turn(20, 90);
-            forward(5, 30);
-
+            backward(1,10);
+            backward(1,30);
+            turn(20, -180);
+            forward(50/12.0, 20);
         }
 
         taskNumber = 9999;
-
     }
 }
