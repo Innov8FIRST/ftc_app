@@ -19,14 +19,12 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "Innov8_Tinkerbell_Depot", group = "Auto")
+@Autonomous(name = "Innov8_Tinkerbell_NoSampleDepot", group = "Auto")
 
-public class Innov8_Tinkerbell_Depot extends LinearOpMode {
+public class Innov8_Tinkerbell_NoSampleDepot extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite"; //Establish name for minerals
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
-    private static final String VUFORIA_KEY = "ATVwosb/////AAAAGYlO5qoc6kZagqZX6jvBKGgVjiVqbwuCKCZeIQTBkfNwsuJY/+oa3DHJbR/aFFfPF2A/bsi9cY36hUzYuOhFVBmWjYzVbQEh3YPoVATeaQEr/P6hNDA2AbW1Xbq0+hxqiYKpA1vNu22pVPOMW7MDmDst4HiuDLEXATZC3boSoLU6d9up0qPxZbZ+3fjXMnMTr6QkXIle3O7dfg/FVM09i/CIsq/Harcgg6lCoOYnrw70TEmPXOAxYdMh6Dh2KxZ8uAfHLur0U2adA0mWUKS7+z8Axq6jlH5oY8LOXp0FqX6A820mkqeDZz5DCkupkLOuTw/taIqz4vf2ewHRB8xGt7hEu34ZOr1TWOpT0bVnLLhB";
-    private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod; //Calls the Tensor Flow Object Detection
     private static final double FEET_TO_ENCODER = (1120*12)/(4*Math.PI);
 
@@ -196,30 +194,6 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         return maxConfi;
     }
 
-    private void initVuforia() {
-        // Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = CameraDirection.BACK;
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        // Loading trackables is not necessary for the Tensor Flow Object Detection engine.
-    }
-
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
-        // Activate Tensor Flow Object Detection
-        if (tfod != null) {
-            tfod.activate();
-        }
-    }
 
     public void knockMineral() {
         endPositionR = robot.rightMotor.getCurrentPosition() + FEET_TO_ENCODER * 3;
@@ -296,8 +270,6 @@ public class Innov8_Tinkerbell_Depot extends LinearOpMode {
         taskNumber = 1;
         telemetried();
 
-        initVuforia();
-        initTfod();
         initGyro();
         //Decide which mineral to knock
         taskNumber = 2;

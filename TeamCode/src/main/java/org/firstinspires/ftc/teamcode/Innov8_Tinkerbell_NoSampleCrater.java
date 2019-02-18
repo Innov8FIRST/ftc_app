@@ -11,9 +11,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "Innov8_Tinkerbell_CraterMaybe", group = "Auto")
+@Autonomous(name = "Innov8_Tinkerbell_NoSampleCrater", group = "Auto")
 
-public class Innov8_Tinkerbell_MaybeCrater extends LinearOpMode {
+public class Innov8_Tinkerbell_NoSampleCrater extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite"; //Establish name for minerals
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
@@ -238,8 +238,6 @@ public class Innov8_Tinkerbell_MaybeCrater extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         robot.init(hardwareMap);                                // Servo mid position
-     //   initVuforia();
-      //  initTfod();
         telemetried();
 
         waitForStart();
@@ -249,57 +247,41 @@ public class Innov8_Tinkerbell_MaybeCrater extends LinearOpMode {
         telemetried();
 
         //Drops robot from lander
-        drop();
+      //  drop();
         taskNumber = 1;
         telemetried();
 
         taskNumber = 2;
-        forward(13, 40);
+        forward(2.5, 40);
         telemetried();
 
-        taskNumber = 10;
+        taskNumber = 3;
+        turn(40,90);
+        telemetried();
+
+        taskNumber = 4;
+        forward(3, 40);
+        telemetried();
+
+        taskNumber = 5;
+        turn(30,60);
+        telemetried();
+
+        taskNumber = 6;
+        forward(6,40);
+        telemetried();
+
+        taskNumber = 7;
         michaelDrop();
         telemetried();
-
-        //Decide which mineral to knock
-        taskNumber = 4;
-      //  confi = idenMineral();
-        telemetried();
-
-    /*    if (confi <= 0.9) {
-            turn(30, -30);
-            mineralposition = mineralposition + 1;
-            confi = idenMineral();
-            if (confi <= 0.9) {
-                turn(30, 60);
-                mineralposition = mineralposition + 1;
-                confi = idenMineral();
-            }
-        } */
-        //Move robot to knock mineral
-    //    knockMineral();
-    //    taskNumber = 4;
-    //    telemetried();
-
-        //After mineral has been knocked, moves backward to prepare for turn
-     //   backward(4, 40);
-    //    taskNumber = 5;
-     //   telemetried();
-
-        //Move forward the last time towards safe zone
-        //forward(8, 20);
-        //taskNumber = 9;
-        //telemetried();
-
-        //Drops totem
-        //Wait for totem to drop
         wait(1000);
-        taskNumber = 11;
+
+        taskNumber = 8;
+        backward(10,50);
         telemetried();
 
-        //Move backwards out of safe zone
-        backward(3, 30);
-        taskNumber = 12;
+        taskNumber = 9;
+        michaelDrop();
         telemetried();
         taskNumber = 9999;
         telemetried();

@@ -65,12 +65,8 @@ public class HardwareInnov8Tinkerbell {
         rightMotor = hwMap.dcMotor.get("rightMotor");
         leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        //leftFruity = hwMap.colorSensor.get("leftFruity");
-        //rightFruity = hwMap.colorSensor.get("rightFruity");
         liftMotor = hwMap.dcMotor.get("liftMotor");
         liftMotor.setDirection(DcMotor.Direction.FORWARD);
-        // rightChain = hwMap.dcMotor.get("rightChain");
-        //rightChain.setDirection(DcMotor.Direction.FORWARD);
         michael = hwMap.dcMotor.get("michael");
         michael.setDirection(DcMotor.Direction.FORWARD);
         wendy = hwMap.dcMotor.get("wendy");

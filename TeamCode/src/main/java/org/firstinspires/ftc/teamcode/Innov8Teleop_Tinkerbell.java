@@ -75,22 +75,16 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
         double left2 = 0;
         double right2 = 0;
         double max;
-        double END_SERVO = 1; // all the way up
-        double START_SERVO = 0; // all the way down
-        double MID_SERVO = 0.5;
-        double lift = 0;
-        double turn = 0;
         double startLift = 0;
         double currentLift = 0;
         double endLift = 0;
         double liftPower = 0;
-        double reduceSpeedArm = 0.5;
         double reduceDriveSpeed = 1;
         double rightDirection = -1;
         double leftDirection = -1;
         double rPower = 0;
         double lPower = 0;
-        double correctR = 0.9;
+        double correctR = 1;
         double correctL = 1;
         double mStartPos = 0;   //michael start and end positions
         double mEndPos = 0;
@@ -243,7 +237,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                     if (currentWendy > -100) {
                         endWendy = -100 - currentWendy;
                         while (robot.wendy.getCurrentPosition() > endWendy && opModeIsActive()) {
-                            robot.wendy.setPower(-0.3);
+                            robot.wendy.setPower(-1);
                         }
                     }
                 leftTrigger = gamepad2.left_trigger;
@@ -254,7 +248,7 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
                 if (currentWendy > -100) {
                     endWendy = -100 - currentWendy;
                     while (robot.wendy.getCurrentPosition() > endWendy && opModeIsActive()) {
-                        robot.wendy.setPower(-0.3);
+                        robot.wendy.setPower(-1);
                     }
                 }
                 rightTrigger = (gamepad2.right_trigger * -1);
@@ -268,11 +262,11 @@ public class Innov8Teleop_Tinkerbell extends LinearOpMode {
             //extends wendy; wendy is all powerful arm
 
             if (gamepad2.dpad_right) {
-                robot.wendy.setPower(0.3);
+                robot.wendy.setPower(1);
                 currentWendy = robot.wendy.getCurrentPosition();
             } else if (gamepad2.dpad_left) {
                 currentWendy = robot.wendy.getCurrentPosition();
-                robot.wendy.setPower(-0.3);
+                robot.wendy.setPower(-1);
             } else {
                 robot.wendy.setPower(0);
             }
